@@ -182,7 +182,7 @@ export default function OnetimeFeeDetailPage({
               {isEditing ? (
                 <Box
                   as="select"
-                  value={feeData.category}
+                  //value={feeData.category}
                   onChange={(e: any) => setFeeData({ ...feeData, category: e.target.value })}
                   px={3}
                   py={2}
@@ -220,7 +220,7 @@ export default function OnetimeFeeDetailPage({
               {isEditing ? (
                 <Box
                   as="select"
-                  value={feeData.status}
+                  //value={feeData.status}
                   onChange={(e: any) => setFeeData({ ...feeData, status: e.target.value })}
                   px={3}
                   py={2}

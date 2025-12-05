@@ -41,6 +41,8 @@ export async function loginAction(formData: FormData) {
   const cookieStore = await cookies();
   cookieStore.set("session", username, {
     httpOnly: true,
+    secure: true,      //  bắt buộc khi deploy
+    sameSite: "lax",   //  để middleware đọc được cookie
     path: "/",
   });
 

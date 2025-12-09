@@ -5,7 +5,6 @@ import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getHouseholdsAction, addMonthlyFeeRecordAction } from "@/lib/actions";
-import { print } from "@/lib/utils";
 
 const MONTHS = [
   { value: 1, label: "January" },

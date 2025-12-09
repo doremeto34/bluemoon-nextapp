@@ -3,11 +3,16 @@ import { cookies } from "next/headers";
 import { logoutAction } from "@/lib/actions";
 import { Box, Heading, Text, VStack, Flex, SimpleGrid } from "@chakra-ui/react";
 import { MdApartment, MdPeople, MdAttachMoney } from "react-icons/md";
+import { countHouseholdsAction, countPeopleAction, calculateMonthlyRevenueAction } from "@/lib/utils";
 
 export default async function Dashboard() {
   const cookieStore = await cookies();
   const username = cookieStore.get("session")?.value;
 
+  const householdCount = await countHouseholdsAction();
+  const personCount = await countPeopleAction();
+  const currentDate = new Date();
+  const monthlyRevenue = await calculateMonthlyRevenueAction(currentDate.getMonth() + 1, currentDate.getFullYear()); 
   return (
     <Box>
       <Heading mb={4} color="teal.700">Dashboard Overview</Heading>
@@ -37,11 +42,11 @@ export default async function Dashboard() {
             </Box>
             <Box>
               <Text color="gray.600" fontSize="sm">Total Households</Text>
-              <Heading size="xl" color="teal.700">156</Heading>
+              <Heading size="xl" color="teal.700">{householdCount}</Heading>
             </Box>
           </Flex>
           <Text fontSize="sm" color="gray.500">
-            12 vacant units
+            {100 - householdCount} vacant units
           </Text>
         </Box>
 
@@ -65,7 +70,7 @@ export default async function Dashboard() {
             </Box>
             <Box>
               <Text color="gray.600" fontSize="sm">Total Residents</Text>
-              <Heading size="xl" color="cyan.700">482</Heading>
+              <Heading size="xl" color="cyan.700">{personCount}</Heading>
             </Box>
           </Flex>
           <Text fontSize="sm" color="gray.500">
@@ -92,8 +97,8 @@ export default async function Dashboard() {
               <MdAttachMoney />
             </Box>
             <Box>
-              <Text color="gray.600" fontSize="sm">Monthly Revenue</Text>
-              <Heading size="xl" color="blue.700">$124,580</Heading>
+              <Text color="gray.600" fontSize="sm">Monthly Collection</Text>
+              <Heading size="xl" color="blue.700">${monthlyRevenue.toLocaleString()}</Heading>
             </Box>
           </Flex>
           <Text fontSize="sm" color="gray.500">

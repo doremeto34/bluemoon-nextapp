@@ -1,50 +1,57 @@
 'use client';
 
-import { Box, Heading, Text, SimpleGrid, Flex, Input, HStack } from "@chakra-ui/react";
-import { FiSearch } from "react-icons/fi";
+import { Box, Heading, Text, SimpleGrid, Flex, Input, HStack, Button } from "@chakra-ui/react";
+import { FiSearch, FiPlus } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getHouseholdsAction } from "@/lib/actions";
+import type { Household } from "@/types/households";
 
-const HOUSEHOLDS = [
-  { id: 101, room: "101", owner: "Doctor David John Smith", members: 4, status: "Occupied" },
-  { id: 102, room: "102", owner: "Sarah Johnson", members: 3, status: "Occupied" },
-  { id: 103, room: "103", owner: "Michael Brown", members: 2, status: "Occupied" },
-  { id: 104, room: "104", owner: "", members: 0, status: "Vacant" },
-  { id: 105, room: "105", owner: "Emily Davis", members: 5, status: "Occupied" },
-  { id: 201, room: "201", owner: "David Wilson", members: 3, status: "Occupied" },
-  { id: 202, room: "202", owner: "Lisa Anderson", members: 4, status: "Occupied" },
-  { id: 203, room: "203", owner: "James Taylor", members: 2, status: "Occupied" },
-  { id: 204, room: "204", owner: "", members: 0, status: "Vacant" },
-  { id: 205, room: "205", owner: "Maria Garcia", members: 3, status: "Occupied" },
-  { id: 301, room: "301", owner: "Robert Martinez", members: 4, status: "Occupied" },
-  { id: 302, room: "302", owner: "Jennifer Lee", members: 2, status: "Occupied" },
-  { id: 303, room: "303", owner: "William White", members: 3, status: "Occupied" },
-  { id: 304, room: "304", owner: "Jessica Harris", members: 5, status: "Occupied" },
-  { id: 305, room: "305", owner: "", members: 0, status: "Vacant" },
-  { id: 401, room: "401", owner: "Christopher Clark", members: 3, status: "Occupied" },
-  { id: 402, room: "402", owner: "Amanda Lewis", members: 4, status: "Occupied" },
-  { id: 403, room: "403", owner: "Matthew Walker", members: 2, status: "Occupied" },
-  { id: 404, room: "404", owner: "Ashley Hall", members: 3, status: "Occupied" },
-  { id: 405, room: "405", owner: "Daniel Young", members: 4, status: "Occupied" },
-];
 
 export default function HouseholdPage() {
   const router = useRouter();
+  const [households, setHouseholds] = useState<Household[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredHouseholds = HOUSEHOLDS.filter(
+  useEffect(() => {
+    async function load() {
+      const data = await getHouseholdsAction();
+      setHouseholds(data);
+    }
+    load();
+  }, []);
+  
+  const filteredHouseholds = households.filter(
     (h) =>
       h.room.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.owner.toLowerCase().includes(searchTerm.toLowerCase())
+      (h.owner && h.owner.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
     <Box>
-      <Heading mb={4} color="teal.700">Household Management</Heading>
-      <Text color="gray.600" mb={6}>
-        View and manage all households in the building
-      </Text>
+      <Flex justify="space-between" align="center" mb={4}>
+        <Box>
+          <Heading color="teal.700">Household Management</Heading>
+        </Box>
+        <Button
+          colorPalette="teal"
+          bgGradient="to-r"
+          gradientFrom="teal.500"
+          gradientTo="cyan.500"
+          color="white"
+          _hover={{
+            transform: 'translateY(-2px)',
+            boxShadow: 'lg',
+          }}
+          onClick={() => router.push('household/create')}
+        >
+          <HStack gap={2}>
+            <FiPlus />
+            <Text>Add Household</Text>
+          </HStack>
+        </Button>
+      </Flex>
 
       {/* Search Bar */}
       <Box bg="white" p={4} borderRadius="lg" boxShadow="md" mb={6}>

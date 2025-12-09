@@ -1,56 +1,38 @@
 'use client';
 
 import { Box, Heading, Text, VStack, Flex, Button, SimpleGrid, HStack } from "@chakra-ui/react";
-import { FiArrowLeft, FiUser, FiPhone, FiMail } from "react-icons/fi";
+import { FiArrowLeft, FiUser, FiEdit, FiUserPlus, FiTrash2 } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
 import { useRouter } from "next/navigation";
-const HOUSEHOLD_DATA: Record<number, any> = {
-  101: {
-    room: "101",
-    owner: "John Smith",
-    area: "75 m²",
-    floor: "1st Floor",
-    status: "Occupied",
-    moveInDate: "Jan 15, 2023",
-    members: [
-      { name: "John Smith", age: 42, relationship: "Owner", phone: "555-0101", email: "john.smith@email.com" },
-      { name: "Mary Smith", age: 39, relationship: "Spouse", phone: "555-0102", email: "mary.smith@email.com" },
-      { name: "Tom Smith", age: 15, relationship: "Child", phone: "-", email: "-" },
-      { name: "Lucy Smith", age: 12, relationship: "Child", phone: "-", email: "-" },
-    ]
-  },
-  102: {
-    room: "102",
-    owner: "Sarah Johnson",
-    area: "68 m²",
-    floor: "1st Floor",
-    status: "Occupied",
-    moveInDate: "Mar 20, 2022",
-    members: [
-      { name: "Sarah Johnson", age: 35, relationship: "Owner", phone: "555-0201", email: "sarah.j@email.com" },
-      { name: "Mike Johnson", age: 37, relationship: "Spouse", phone: "555-0202", email: "mike.j@email.com" },
-      { name: "Emma Johnson", age: 8, relationship: "Child", phone: "-", email: "-" },
-    ]
-  },
-  // Add more as needed
-};
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { getHouseholdByIdAction } from "@/lib/actions";
 
-export default function HouseholdDetailPage({ 
-  householdId, 
-}: { 
-  householdId: number;
-}) {
+export default function HouseholdDetailPage() {
   const router = useRouter();
-  const household = HOUSEHOLD_DATA[householdId] || {
-    room: String(householdId),
-    owner: "Sample Owner",
-    area: "70 m²",
-    floor: "Unknown",
-    status: "Occupied",
-    moveInDate: "N/A",
-    members: [
-      { name: "Sample Owner", age: 30, relationship: "Owner", phone: "555-0000", email: "sample@email.com" },
-    ]
+
+  const pathname = usePathname();
+  const householdId = Number(pathname.split("/")[3]);
+  const [household, setHousehold] = useState<any>(null);
+
+  useEffect(() => {
+    async function fetchHousehold() {
+      const data = await getHouseholdByIdAction(householdId);
+      setHousehold(data);
+    }
+    fetchHousehold();
+  }, [householdId]);
+  
+  if (!household) return <div>Loading</div>;
+
+  const handleAddMember = () => {
+    alert('Add new member to household');
+  };
+
+  const handleRemoveMember = (memberId: number) => {
+    if (confirm('Are you sure you want to remove this member?')) {
+      alert(`Remove member ID: ${memberId}`);
+    }
   };
 
   return (
@@ -60,7 +42,7 @@ export default function HouseholdDetailPage({
         variant="ghost"
         colorPalette="teal"
         mb={4}
-        onClick={() => router.push(`/dashboard/household`)}
+        onClick={() => router.push('/dashboard/household')}
       >
         <HStack gap={2}>
           <FiArrowLeft />
@@ -75,20 +57,32 @@ export default function HouseholdDetailPage({
 
       {/* Household Information */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
-        <Flex align="center" gap={4} mb={4}>
-          <Box
-            p={4}
-            bg="teal.100"
-            borderRadius="lg"
-            color="teal.600"
-            fontSize="3xl"
+        <Flex justify="space-between" align="start" mb={4}>
+          <Flex align="center" gap={4}>
+            <Box
+              p={4}
+              bg="teal.100"
+              borderRadius="lg"
+              color="teal.600"
+              fontSize="3xl"
+            >
+              <MdApartment />
+            </Box>
+            <Box>
+              <Heading size="lg" color="teal.700">Room {household.room}</Heading>
+              <Text color="gray.600">{household.owner}</Text>
+            </Box>
+          </Flex>
+          <Button
+            colorPalette="teal"
+            size="sm"
+            onClick={() => router.push(`/dashboard/household/${householdId}/edit`)}
           >
-            <MdApartment />
-          </Box>
-          <Box>
-            <Heading size="lg" color="teal.700">Room {household.room}</Heading>
-            <Text color="gray.600">{household.owner}</Text>
-          </Box>
+            <HStack gap={2}>
+              <FiEdit />
+              <Text>Edit Household</Text>
+            </HStack>
+          </Button>
         </Flex>
 
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={4} mt={6}>
@@ -118,63 +112,80 @@ export default function HouseholdDetailPage({
 
       {/* Household Members */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md">
-        <Heading size="lg" mb={4} color="teal.600">Household Members</Heading>
+        <Flex justify="space-between" align="center" mb={4}>
+          <Heading size="lg" color="teal.600">Household Members</Heading>
+          <Button
+            colorPalette="teal"
+            size="sm"
+            onClick={handleAddMember}
+          >
+            <HStack gap={2}>
+              <FiUserPlus />
+              <Text>Add Member</Text>
+            </HStack>
+          </Button>
+        </Flex>
         <VStack align="stretch" gap={4}>
-          {household.members.map((member: any, index: number) => (
+          {household.members.map((member: any) => (
             <Box
-              key={index}
+              key={member.id}
               p={5}
               bg="gray.50"
               borderRadius="lg"
               borderLeft="4px solid"
-              borderLeftColor={member.relationship === "Owner" ? "teal.500" : "cyan.400"}
+              borderLeftColor="teal.500"
             >
-              <Flex align="start" gap={4}>
-                <Box
-                  p={3}
-                  bg="white"
-                  borderRadius="lg"
-                  color="teal.600"
-                  fontSize="xl"
-                >
-                  <FiUser />
-                </Box>
-                <Box flex="1">
-                  <Flex justify="space-between" align="start" mb={2}>
-                    <Box>
-                      <Text fontWeight="semibold" color="gray.700" fontSize="lg">
-                        {member.name}
-                      </Text>
-                      <Text fontSize="sm" color="gray.600">
-                        {member.relationship} • {member.age} years old
-                      </Text>
-                    </Box>
-                    {member.relationship === "Owner" && (
-                      <Box
-                        px={3}
-                        py={1}
-                        bg="teal.100"
-                        color="teal.700"
-                        borderRadius="md"
-                        fontSize="xs"
-                        fontWeight="semibold"
-                      >
-                        OWNER
+              <Flex justify="space-between" align="start">
+                <Flex align="start" gap={4} flex="1">
+                  <Box
+                    p={3}
+                    bg="white"
+                    borderRadius="lg"
+                    color="teal.600"
+                    fontSize="xl"
+                  >
+                    <FiUser />
+                  </Box>
+                  <Box flex="1">
+                    <Text fontWeight="semibold" color="gray.700" fontSize="lg" mb={1}>
+                      {member.full_name}
+                    </Text>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} gap={3} mt={2}>
+                      <Box>
+                        <Text fontSize="xs" color="gray.600">ID</Text>
+                        <Text fontSize="sm" color="gray.700" fontWeight="medium">{member.id}</Text>
                       </Box>
-                    )}
-                  </Flex>
+                      <Box>
+                        <Text fontSize="xs" color="gray.600">Date of Birth</Text>
+                        <Text fontSize="sm" color="gray.700" fontWeight="medium">
+                          {new Date(member.ngay_sinh).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Text fontSize="xs" color="gray.600">CCCD</Text>
+                        <Text fontSize="sm" color="gray.700" fontWeight="medium">{member.cccd}</Text>
+                      </Box>
+                    </SimpleGrid>
+                  </Box>
+                </Flex>
 
-                  <SimpleGrid columns={{ base: 1, md: 2 }} gap={3} mt={3}>
-                    <HStack gap={2} color="gray.600">
-                      <FiPhone />
-                      <Text fontSize="sm">{member.phone}</Text>
+                <HStack gap={2} ml={4}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    colorPalette="red"
+                    onClick={() => handleRemoveMember(member.id)}
+                  >
+                    <HStack gap={1}>
+                      <FiTrash2 />
+                      <Text>Remove</Text>
                     </HStack>
-                    <HStack gap={2} color="gray.600">
-                      <FiMail />
-                      <Text fontSize="sm">{member.email}</Text>
-                    </HStack>
-                  </SimpleGrid>
-                </Box>
+                  </Button>
+                </HStack>
               </Flex>
             </Box>
           ))}

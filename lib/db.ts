@@ -30,8 +30,10 @@ export async function createHouseholdsTable() {
     await sql`
       CREATE TABLE IF NOT EXISTS households (
         id SERIAL PRIMARY KEY,
-        owner_id INT UNIQUE,       -- set FK later because persons not created yet
-        area INT
+        owner_id INT UNIQUE,
+        area INT,
+        floor INT,
+        movein_date DATE
       );
     `;
     return { success: true };
@@ -119,7 +121,6 @@ export async function createMonthlyFeeRecordsTable() {
       CREATE TABLE IF NOT EXISTS monthly_fee_records (
         id SERIAL PRIMARY KEY,
         household_id INT REFERENCES households(id) ON DELETE CASCADE,
-        fee_type_id INT REFERENCES monthly_fee_types(id) ON DELETE CASCADE,
         month INT,
         year INT,
         amount INT

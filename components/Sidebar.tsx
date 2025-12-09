@@ -3,10 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { Box, VStack, HStack, Text, Button, Flex } from "@chakra-ui/react";
-import { HiHome, HiUsers, HiCog, HiLogout } from "react-icons/hi";
-import { FiMoon } from "react-icons/fi";
+import { HiHome, HiUsers, HiLogout } from "react-icons/hi";
+import { FiDollarSign, FiFileText, FiMoon } from "react-icons/fi";
 import { logoutAction } from "@/lib/actions";
 import { usePathname, useRouter } from "next/navigation";
+import { MdApartment, MdOutlineAccountCircle } from "react-icons/md";
+import { IoCarSport } from "react-icons/io5";
+import { FcElectricity } from "react-icons/fc";
 
 type NavItem = {
   label: string;
@@ -16,12 +19,13 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/dashboard", icon: HiHome },
-  { label: "Household", href: "/dashboard/household", icon: HiHome },
-  { label: "Demography", href: "/dashboard/demography", icon: HiUsers },
-  { label: "Fees", href: "/dashboard/fees", icon: HiCog },
-  { label: "Bills", href: "/dashboard/bills", icon: HiCog },
-  { label: "Utility", href: "/dashboard/utility", icon: HiCog },
-  { label: "Users", href: "/dashboard/users", icon: HiCog },
+  { label: "Household", href: "/dashboard/household", icon: MdApartment },
+  { label: "Demography", href: "/dashboard/demography", icon: MdOutlineAccountCircle },
+  { label: "Fees", href: "/dashboard/fees", icon: FiDollarSign },
+  { label: "Bills", href: "/dashboard/bills", icon: FiFileText },
+  { label: "Vehicle", href: "/dashboard/vehicle", icon: IoCarSport },
+  { label: "Utility", href: "/dashboard/utility", icon: FcElectricity },
+  { label: "Users", href: "/dashboard/users", icon: HiUsers },
 ];
 
 export default function Sidebar() {
@@ -78,7 +82,12 @@ export default function Sidebar() {
       <Flex direction="column" flex="1" overflowY="auto" mb={5}>
         <VStack align="stretch" gap={2}>
           {NAV_ITEMS.map((item) => {
-            const active = pathname === item.href;
+            let active;
+            if (item.href === "/dashboard") {
+              active = pathname === item.href;
+            }else{
+              active = pathname.includes(item.href);
+            }
             const ItemIcon = item.icon;
 
             return (

@@ -5,8 +5,7 @@ import { FiCheckCircle, FiCircle, FiDollarSign } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/actions";
 import { MonthlyFeeRecord } from "@/types/monthly_fee_record";
-import MonthlyBillList from "@/components/MonthlyBillList";
-import VehicleBillList from "@/components/VehicleBillList";
+import UtilityReadingList from "@/components/UtilityReadingList";
 
 const YEARS = [2025, 2026, 2027];
 
@@ -75,9 +74,9 @@ export default function BillPage() {
 
   return (
     <Box>
-      <Heading mb={4} color="teal.700">Monthly Bills</Heading>
+      <Heading mb={4} color="teal.700">Utility</Heading>
       <Text color="gray.600" mb={6}>
-        View and manage monthly payment bills for all households
+        View and manage utility payments for all households
       </Text>
 
       {/* Filter Section */}
@@ -185,18 +184,10 @@ export default function BillPage() {
 
         </Flex>
       </Box>
-      {selectedType === "Monthly" && (
-        <MonthlyBillList
-          month={selectedMonth}
-          year={selectedYear}
-        />
-      )}
-      {selectedType === "Vehicle" && (
-        <VehicleBillList
-          month={selectedMonth}
-          year={selectedYear}
-        />
-      )}
+      <UtilityReadingList
+        month={selectedMonth}
+         year={selectedYear}
+      />
     </Box>
   );
 }

@@ -63,10 +63,10 @@ export default function HouseholdCreatePage() {
                   value={formData.room_number}
                   onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -82,10 +82,10 @@ export default function HouseholdCreatePage() {
                   value={formData.area}
                   onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -99,10 +99,10 @@ export default function HouseholdCreatePage() {
                   value={formData.floor}
                   onChange={(e) => setFormData({ ...formData, floor: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -116,10 +116,10 @@ export default function HouseholdCreatePage() {
                   value={formData.owner_id}
                   onChange={(e) => setFormData({ ...formData, owner_id: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -133,10 +133,10 @@ export default function HouseholdCreatePage() {
                   value={formData.move_in_date}
                   onChange={(e) => setFormData({ ...formData, move_in_date: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>

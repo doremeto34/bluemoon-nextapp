@@ -2,20 +2,18 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  ChakraProvider,
-  Box, 
-  Button, 
-  Input, 
-  VStack, 
-  Heading, 
-  Text, 
-  Container, 
-  Flex, 
-  IconButton, 
+import {
+  Box,
+  Button,
+  Input,
+  VStack,
+  Heading,
+  Text,
+  Container,
+  Flex,
+  IconButton,
   Link,
-  createSystem,
-  defaultConfig,
+  Alert,
 } from "@chakra-ui/react";
 import { FiUser, FiLock, FiEye, FiEyeOff, FiMoon } from 'react-icons/fi';
 import { loginAction } from "@/lib/actions";
@@ -25,10 +23,15 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   async function handleSubmit(formData: FormData) {
+    setIsLoggingIn(true);
     const res = await loginAction(formData);
-    if (res.error) setError(res.error);
+    if (res.error) {
+      setError(res.error);
+      setIsLoggingIn(false);
+    }
     else router.push("/dashboard");
   }
 
@@ -116,10 +119,10 @@ export default function LoginPage() {
                     placeholder="Enter your username"
                     pl="10"
                     size="lg"
-                    borderColor="gray.300"
+                    colorPalette={"teal"}
+                    borderColor={"gray.300"}
                     _focus={{
-                      borderColor: 'teal.500',
-                      boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                      borderColor: "teal.500",
                     }}
                   />
                 </Box>
@@ -149,10 +152,10 @@ export default function LoginPage() {
                     pl="10"
                     pr="12"
                     size="lg"
-                    borderColor="gray.300"
+                    colorPalette={"teal"}
+                    borderColor={"gray.300"}
                     _focus={{
-                      borderColor: 'teal.500',
-                      boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                      borderColor: "teal.500",
                     }}
                   />
                   <Box
@@ -174,29 +177,52 @@ export default function LoginPage() {
               </Box>
 
               {error && (
-                <Text color="red.500" fontSize="sm" w="100%">
-                  {error}
-                </Text>
+                <Alert.Root status="error">
+                  <Alert.Indicator />
+                  <Alert.Title>{error}</Alert.Title>
+                </Alert.Root>
+                
               )}
-
-              <Button
-                type="submit"
-                colorPalette="teal"
-                size="lg"
-                w="100%"
-                mt={2}
-                bgGradient="to-r"
-                gradientFrom="teal.500"
-                gradientTo="cyan.500"
-                color="white"
-                _hover={{
-                  transform: 'translateY(-2px)',
-                  boxShadow: 'lg',
-                }}
-                transition="all 0.2s"
-              >
-                Sign In
-              </Button>
+              {!isLoggingIn ?
+                <Button
+                  type="submit"
+                  colorPalette="teal"
+                  size="lg"
+                  w="100%"
+                  mt={2}
+                  bgGradient="to-r"
+                  gradientFrom="teal.500"
+                  gradientTo="cyan.500"
+                  color="white"
+                  _hover={{
+                    transform: 'translateY(-2px)',
+                    boxShadow: 'lg',
+                  }}
+                  transition="all 0.2s"
+                >
+                  Sign In
+                </Button>
+                :
+                <Button
+                  loading
+                  loadingText="Sign In"
+                  type="submit"
+                  colorPalette="teal"
+                  size="lg"
+                  w="100%"
+                  mt={2}
+                  bgGradient="to-r"
+                  gradientFrom="teal.500"
+                  gradientTo="cyan.500"
+                  color="white"
+                  _hover={{
+                    transform: 'translateY(-2px)',
+                    boxShadow: 'lg',
+                  }}
+                  transition="all 0.2s"
+                >
+                </Button>
+              }
             </VStack>
           </form>
 

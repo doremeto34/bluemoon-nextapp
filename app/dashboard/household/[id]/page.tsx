@@ -7,6 +7,10 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getHouseholdByIdAction } from "@/lib/actions";
+import { getVehiclesByHouseholdIdAction } from "@/lib/vehicle";
+import { IoCarSportOutline } from "react-icons/io5";
+import { PiMotorcycle } from "react-icons/pi";
+import { SiHonda } from "react-icons/si";
 
 export default function HouseholdDetailPage() {
   const router = useRouter();
@@ -14,13 +18,16 @@ export default function HouseholdDetailPage() {
   const pathname = usePathname();
   const householdId = Number(pathname.split("/")[3]);
   const [household, setHousehold] = useState<any>(null);
+  const [vehicles, setVehicles] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchHousehold() {
+    async function fetch() {
       const data = await getHouseholdByIdAction(householdId);
       setHousehold(data);
+      const vehiclesData = await getVehiclesByHouseholdIdAction(householdId);
+      setVehicles(vehiclesData);
     }
-    fetchHousehold();
+    fetch();
   }, [householdId]);
   
   if (!household) return <div>Loading</div>;
@@ -35,6 +42,16 @@ export default function HouseholdDetailPage() {
     }
   };
 
+  const handleRemoveVehicle = (vehicleId: number) => {
+    if (confirm('Are you sure you want to remove this vehicle?')) {
+      alert(`Remove vehicle ID: ${vehicleId}`);
+    }
+  };
+
+  const handleAddVehicle = () => {
+    router.push(`/dashboard/vehicle/create?household_id=${householdId}`);
+  }
+  
   return (
     <Box>
       {/* Back Button */}
@@ -111,7 +128,7 @@ export default function HouseholdDetailPage() {
       </Box>
 
       {/* Household Members */}
-      <Box bg="white" p={6} borderRadius="lg" boxShadow="md">
+      <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
         <Flex justify="space-between" align="center" mb={4}>
           <Heading size="lg" color="teal.600">Household Members</Heading>
           <Button
@@ -179,6 +196,84 @@ export default function HouseholdDetailPage() {
                     variant="outline"
                     colorPalette="red"
                     onClick={() => handleRemoveMember(member.id)}
+                  >
+                    <HStack gap={1}>
+                      <FiTrash2 />
+                      <Text>Remove</Text>
+                    </HStack>
+                  </Button>
+                </HStack>
+              </Flex>
+            </Box>
+          ))}
+        </VStack>
+      </Box>
+
+      {/* Household Vehicles */}
+      <Box bg="white" p={6} borderRadius="lg" boxShadow="md">
+        <Flex justify="space-between" align="center" mb={4}>
+          <Heading size="lg" color="teal.600">Household Vehicle</Heading>
+          <Button
+            colorPalette="teal"
+            size="sm"
+            onClick={handleAddVehicle}
+          >
+            <HStack gap={2}>
+              <SiHonda />
+              <Text>Add Vehicle</Text>
+            </HStack>
+          </Button>
+        </Flex>
+        <VStack align="stretch" gap={4}>
+          {vehicles.map((vehicle: any) => (
+            <Box
+              key={vehicle.id}
+              p={5}
+              bg="gray.50"
+              borderRadius="lg"
+              borderLeft="4px solid"
+              borderLeftColor="teal.500"
+            >
+              <Flex justify="space-between" align="start">
+                <Flex align="start" gap={4} flex="1">
+                  <Box
+                    p={3}
+                    bg="white"
+                    borderRadius="lg"
+                    color="teal.600"
+                    fontSize="xl"
+                  >
+                    {vehicle.type === 'Xe máy' ? <PiMotorcycle /> : <IoCarSportOutline />}
+                  </Box>
+                  <Box flex="1">
+                    <Text fontWeight="semibold" color="gray.700" fontSize="lg" mb={1}>
+                      {vehicle.name}
+                    </Text>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} gap={3} mt={2}>
+                      <Box>
+                        <Text fontSize="xs" color="gray.600">ID</Text>
+                        <Text fontSize="sm" color="gray.700" fontWeight="medium">{vehicle.id}</Text>
+                      </Box>
+                      <Box>
+                        <Text fontSize="xs" color="gray.600">Type</Text>
+                        <Text fontSize="sm" color="gray.700" fontWeight="medium">
+                          {vehicle.type}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Text fontSize="xs" color="gray.600">Plate Number</Text>
+                        <Text fontSize="sm" color="gray.700" fontWeight="medium">{vehicle.plate_number}</Text>
+                      </Box>
+                    </SimpleGrid>
+                  </Box>
+                </Flex>
+
+                <HStack gap={2} ml={4}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    colorPalette="red"
+                    onClick={() => handleRemoveVehicle(vehicle.id)}
                   >
                     <HStack gap={1}>
                       <FiTrash2 />

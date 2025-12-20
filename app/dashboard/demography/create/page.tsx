@@ -5,6 +5,7 @@ import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPersonAction } from "@/lib/actions";
+import { MdBorderColor } from "react-icons/md";
 
 export default function DemographyCreatePage() {
   const router = useRouter();
@@ -62,10 +63,10 @@ export default function DemographyCreatePage() {
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -79,10 +80,10 @@ export default function DemographyCreatePage() {
                   value={formData.ngay_sinh}
                   onChange={(e) => setFormData({ ...formData, ngay_sinh: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -97,10 +98,10 @@ export default function DemographyCreatePage() {
                   onChange={(e) => setFormData({ ...formData, cccd: e.target.value })}
                   required
                   maxLength={12}
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
@@ -117,10 +118,10 @@ export default function DemographyCreatePage() {
                   placeholder="e.g., 101 (optional)"
                   value={formData.household_id}
                   onChange={(e) => setFormData({ ...formData, household_id: e.target.value })}
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>

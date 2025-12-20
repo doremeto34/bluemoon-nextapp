@@ -71,10 +71,10 @@ export default function HouseholdPage() {
             pl="10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            borderColor="gray.300"
+            colorPalette={"teal"}
+            borderColor={"gray.300"}
             _focus={{
-              borderColor: 'teal.500',
-              boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+              borderColor: "teal.500",
             }}
           />
         </Box>

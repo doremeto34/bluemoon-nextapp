@@ -25,28 +25,28 @@ export default function OnetimeFeeDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-      async function fetchOneTimeFee() {
-        const data = await getOneTimeFeeTypeByIdAction(feeId);
-        setFeeData(data);
-        setDefaultData(data);
-        const recordsData = await getOneTimeFeeRecordsByFeeIdAction(feeId);
-        setRecords(recordsData);
-      }
-      fetchOneTimeFee();
-    }, [feeId]);
-  
+    async function fetchOneTimeFee() {
+      const data = await getOneTimeFeeTypeByIdAction(feeId);
+      setFeeData(data);
+      setDefaultData(data);
+      const recordsData = await getOneTimeFeeRecordsByFeeIdAction(feeId);
+      setRecords(recordsData);
+    }
+    fetchOneTimeFee();
+  }, [feeId]);
+
   if (!feeData) return <div>Loading...</div>;
 
   const handleSave = async () => {
     if (feeData) {
-          const result = await updateOneTimeFeeTypeAction(feeId, feeData);
-          if ("success" in result) {
-            setDefaultData(feeData);
-            setIsEditing(false);
-          } else {
-            alert(result.error);
-          }
-        }
+      const result = await updateOneTimeFeeTypeAction(feeId, feeData);
+      if ("success" in result) {
+        setDefaultData(feeData);
+        setIsEditing(false);
+      } else {
+        alert(result.error);
+      }
+    }
   };
 
   const handleDelete = () => {
@@ -150,7 +150,11 @@ export default function OnetimeFeeDetailPage() {
                 onChange={(e) => setFeeData({ ...feeData, name: e.target.value })}
                 size="lg"
                 fontWeight="semibold"
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
+                _focus={{
+                  borderColor: "teal.500",
+                }}
                 placeholder="Fee name"
               />
             ) : (
@@ -171,7 +175,11 @@ export default function OnetimeFeeDetailPage() {
                   value={feeData.amount}
                   onChange={(e) => setFeeData({ ...feeData, amount: Number(e.target.value) })}
                   size="lg"
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
                 />
               ) : (
                 <Text fontWeight="semibold" fontSize="2xl" color="cyan.700">
@@ -190,7 +198,11 @@ export default function OnetimeFeeDetailPage() {
                   value={feeData.category}
                   onChange={(e) => setFeeData({ ...feeData, category: e.target.value })}
                   size="lg"
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
                 />
               ) : (
                 <Box
@@ -217,7 +229,11 @@ export default function OnetimeFeeDetailPage() {
               <Input
                 value={feeData.description}
                 onChange={(e) => setFeeData({ ...feeData, description: e.target.value })}
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
+                _focus={{
+                  borderColor: "teal.500",
+                }}
               />
             ) : (
               <Text color="gray.700">
@@ -252,7 +268,11 @@ export default function OnetimeFeeDetailPage() {
               type="string"
               value={formData.household_id}
               onChange={(e) => setFormData({ ...formData, household_id: e.target.value })}
-              borderColor="gray.300"
+              colorPalette={"teal"}
+              borderColor={"gray.300"}
+              _focus={{
+                borderColor: "teal.500",
+              }}
             />
           </Box>
           <Box>
@@ -263,7 +283,11 @@ export default function OnetimeFeeDetailPage() {
               type="number"
               value={formData.amount === 0 ? "" : formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-              borderColor="gray.300"
+              colorPalette={"teal"}
+              borderColor={"gray.300"}
+              _focus={{
+                borderColor: "teal.500",
+              }}
             />
           </Box>
           <Box>
@@ -274,7 +298,11 @@ export default function OnetimeFeeDetailPage() {
               type="date"
               value={formData.paid_at}
               onChange={(e) => setFormData({ ...formData, paid_at: e.target.value })}
-              borderColor="gray.300"
+              colorPalette={"teal"}
+              borderColor={"gray.300"}
+              _focus={{
+                borderColor: "teal.500",
+              }}
             />
           </Box>
         </VStack>
@@ -289,12 +317,12 @@ export default function OnetimeFeeDetailPage() {
         {records && records.length > 0 ? (
           <VStack align="stretch" gap={3}>
             {records.map((record: any) => (
-              <Box 
-                key={record.id} 
-                p={4} 
-                bg="gray.50" 
-                borderRadius="md" 
-                borderLeft="4px solid" 
+              <Box
+                key={record.id}
+                p={4}
+                bg="gray.50"
+                borderRadius="md"
+                borderLeft="4px solid"
                 borderLeftColor="cyan.500"
               >
                 <Flex justify="space-between" align="start">

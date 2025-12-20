@@ -182,8 +182,10 @@ export async function createVehiclesTable() {
       CREATE TABLE IF NOT EXISTS vehicles (
         id SERIAL PRIMARY KEY,
         household_id INT REFERENCES households(id) ON DELETE CASCADE,
+        name TEXT,
         type TEXT,
-        plate_number TEXT
+        plate_number TEXT,
+        active BOOLEAN
       );
     `;
     return { success: true };

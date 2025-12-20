@@ -62,10 +62,10 @@ export default function MonthlyFeeCreatePage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
                 _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                  borderColor: "teal.500",
                 }}
               />
             </Box>
@@ -81,10 +81,10 @@ export default function MonthlyFeeCreatePage() {
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
@@ -129,10 +129,10 @@ export default function MonthlyFeeCreatePage() {
                 placeholder="e.g., Monthly management fee for building maintenance"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
                 _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                  borderColor: "teal.500",
                 }}
               />
             </Box>

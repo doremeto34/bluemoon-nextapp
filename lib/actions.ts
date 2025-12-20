@@ -54,6 +54,8 @@ export async function loginAction(formData: FormData) {
   const cookieStore = await cookies();
   cookieStore.set("session", username, {
     httpOnly: true,
+    secure: true,
+    sameSite: "lax",
     path: "/",
   });
 

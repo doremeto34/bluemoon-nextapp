@@ -60,6 +60,7 @@ export default function MonthlyFeeDetailPage() {
           <Button
             colorPalette="teal"
             onClick={() => setIsEditing(true)}
+            
           >
             Edit Fee
           </Button>
@@ -111,7 +112,11 @@ export default function MonthlyFeeDetailPage() {
                 onChange={(e) => setFeeData({ ...feeData, name: e.target.value })}
                 size="lg"
                 fontWeight="semibold"
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
+                _focus={{
+                  borderColor: "teal.500",
+                }}
                 placeholder="Fee name"
               />
             ) : (
@@ -145,7 +150,11 @@ export default function MonthlyFeeDetailPage() {
                   value={feeData.amount}
                   onChange={(e) => setFeeData({ ...feeData, amount: Number(e.target.value) })}
                   size="lg"
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
                 />
               ) : (
                 <Text fontWeight="semibold" fontSize="2xl" color="teal.700">
@@ -223,7 +232,11 @@ export default function MonthlyFeeDetailPage() {
               <Input
                 value={feeData.description}
                 onChange={(e) => setFeeData({ ...feeData, description: e.target.value })}
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
+                _focus={{
+                  borderColor: "teal.500",
+                }}
               />
             ) : (
               <Text color="gray.700">

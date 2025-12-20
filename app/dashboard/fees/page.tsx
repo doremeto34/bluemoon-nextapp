@@ -242,11 +242,10 @@ export default function FeePage() {
               onChange={(e) =>
                 setOtherFeeSearch(e.target.value)
               }
-              borderColor="gray.300"
+              colorPalette={"teal"}
+              borderColor={"gray.300"}
               _focus={{
                 borderColor: "teal.500",
-                boxShadow:
-                  "0 0 0 1px var(--chakra-colors-teal-500)",
               }}
             />
           </Box>

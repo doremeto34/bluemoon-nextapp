@@ -61,10 +61,10 @@ export default function OnetimeFeeCreatePage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
                 _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                  borderColor: "teal.500",
                 }}
               />
             </Box>
@@ -78,10 +78,10 @@ export default function OnetimeFeeCreatePage() {
                 placeholder="e.g., 2500 (optional)"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
                 _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                  borderColor: "teal.500",
                 }}
               />
               <Text fontSize="xs" color="gray.500" mt={1}>
@@ -97,10 +97,10 @@ export default function OnetimeFeeCreatePage() {
                 placeholder="e.g., Annual maintenance and inspection of all elevators"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
                 _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                  borderColor: "teal.500",
                 }}
               />
             </Box>
@@ -113,10 +113,10 @@ export default function OnetimeFeeCreatePage() {
                 placeholder="e.g., Donations, Repairs, Events"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                borderColor="gray.300"
+                colorPalette={"teal"}
+                borderColor={"gray.300"}
                 _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                  borderColor: "teal.500",
                 }}
               />
             </Box>

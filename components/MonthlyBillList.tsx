@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/actions";
-import { Box, Heading, Text, VStack, Flex, HStack, Button, Select, Portal, createListCollection } from "@chakra-ui/react";
+import { Box, Badge, Text, VStack, Flex, HStack, Button, Table, Portal, createListCollection } from "@chakra-ui/react";
 import { FiCheckCircle, FiCircle, FiDollarSign } from "react-icons/fi";
 
 const monthCollection = createListCollection({
@@ -91,77 +91,30 @@ export default function MonthlyBillList({
         </Box>
       </Flex>
 
-      {/* Bills List */}
-      <Box bg="white" borderRadius="lg" boxShadow="md" overflow="hidden">
-        <VStack align="stretch" gap={0} divideY="1px" divideColor="gray.200">
-          {/* Table Header */}
-          <Flex
-            p={4}
-            bg="gray.50"
-            fontWeight="semibold"
-            color="gray.700"
-            display={{ base: "none", md: "flex" }}
-          >
-            <Box flex="0.5">Room</Box>
-            <Box flex="2">Owner</Box>
-            <Box flex="1.5">Period</Box>
-            <Box flex="1.5">Amount</Box>
-            <Box flex="1">Status</Box>
-            <Box flex="1">Action</Box>
-          </Flex>
-
-          {/* Table Rows */}
+      <Table.Root size="sm" variant="outline" borderRadius="lg">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader w="8%">Room</Table.ColumnHeader>
+            <Table.ColumnHeader w="22%">Owner</Table.ColumnHeader>
+            <Table.ColumnHeader w="20%">Period</Table.ColumnHeader>
+            <Table.ColumnHeader w="20%">Amount</Table.ColumnHeader>
+            <Table.ColumnHeader w="15%">Status</Table.ColumnHeader>
+            <Table.ColumnHeader w="25%">Action</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {monthlyRecords.map((payment) => (
-            <Flex
-              key={payment.id}
-              p={4}
-              _hover={{ bg: "gray.50" }}
-              transition="all 0.2s"
-              direction={{ base: "column", md: "row" }}
-              gap={{ base: 3, md: 0 }}
-            >
-              <Box flex="0.5" color="teal.600" fontWeight="medium" fontSize={{ base: "md", md: "md" }}>
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    Room:{' '}
-                  </Text>
-                  {payment.household_id}
-                </Text>
-              </Box>
-              <Box flex="2" fontWeight="medium" color="gray.700">
-                {payment.owner}
-              </Box>
-              <Box flex="1.5" color="gray.600" fontSize={{ base: "sm", md: "md" }}>
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    Period:{' '}
-                  </Text>
-                  {monthCollection.items.find((m) => Number(m.value) === payment.month)?.label} {payment.year}
-                </Text>
-              </Box>
-              <Box flex="1.5" fontSize={{ base: "md", md: "lg" }} fontWeight="semibold" color="gray.700">
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    Amount:{' '}
-                  </Text>
-                  ${payment.amount.toLocaleString()}
-                </Text>
-              </Box>
-              <Box flex="1">
-                <Box
-                  display="inline-block"
-                  px={3}
-                  py={1}
-                  bg={payment.paid ? "green.100" : "red.100"}
-                  color={payment.paid ? "green.700" : "red.700"}
-                  borderRadius="md"
-                  fontSize="sm"
-                  fontWeight="semibold"
-                >
-                  {payment.paid ? "Paid" : "Unpaid"}
-                </Box>
-              </Box>
-              <Box flex="1">
+            <Table.Row key={payment.id}>
+              <Table.Cell>{payment.household_id}</Table.Cell>
+              <Table.Cell>{payment.owner}</Table.Cell>
+              <Table.Cell>{monthCollection.items.find((m) => Number(m.value) === payment.month)?.label} {payment.year}</Table.Cell>
+              <Table.Cell fontWeight="semibold">{"$" + payment.amount.toLocaleString()}</Table.Cell>
+              <Table.Cell>
+                <Badge size="md" colorPalette={payment.paid ? "red" : "yellow"}>
+                  {payment.paid ? "Paid" : "Pending"}
+                </Badge>
+              </Table.Cell>
+              <Table.Cell>
                 <Button
                   size="sm"
                   variant={payment.paid ? "outline" : "solid"}
@@ -173,14 +126,13 @@ export default function MonthlyBillList({
                     <Text>{payment.paid ? "Mark Unpaid" : "Mark Paid"}</Text>
                   </HStack>
                 </Button>
-              </Box>
-            </Flex>
+              </Table.Cell>
+            </Table.Row>
           ))}
-        </VStack>
-      </Box>
-
+        </Table.Body>
+      </Table.Root>
       {monthlyRecords.length === 0 && (
-        <Box bg="white" p={8} borderRadius="lg" boxShadow="md" textAlign="center" mt={6}>
+        <Box bg="white" p={8} borderRadius="lg" boxShadow="md" textAlign="center" mt={4}>
           <Text color="gray.500">No bills found for the selected period.</Text>
         </Box>
       )}

@@ -48,7 +48,7 @@ export default function Sidebar({ isCollapsed, onToggle }:{
       w={isCollapsed ? "80px" : "250px"}
       transition="width 0.25s ease"
       bgGradient="to-b"
-      gradientFrom="teal.700"
+      gradientFrom="#182233"
       gradientTo="cyan.900"
       color="white"
       p={5}
@@ -75,7 +75,7 @@ export default function Sidebar({ isCollapsed, onToggle }:{
                 <FiMoon />
               </Box>
             </Flex>
-            <Text fontSize="2xl" fontWeight="bold">
+            <Text fontSize="xl" fontWeight="medium">
               Bluemoon
             </Text>
             <IconButton
@@ -112,7 +112,7 @@ export default function Sidebar({ isCollapsed, onToggle }:{
             bg="whiteAlpha.200"
             backdropFilter="blur(10px)"
           >
-            <Box fontSize="xl" display="flex" alignItems="center" justifyContent="center">
+            <Box fontSize="md" display="flex" alignItems="center" justifyContent="center">
               <FiMoon />
             </Box>
           </Flex>
@@ -170,13 +170,11 @@ export default function Sidebar({ isCollapsed, onToggle }:{
                     }}
                     transition="all 0.2s"
                     cursor="pointer"
-                    borderLeft={active ? "3px solid" : "3px solid transparent"}
-                    borderLeftColor={active ? "cyan.300" : "transparent"}
                   >
                     <Box fontSize="lg">
                       <ItemIcon />
                     </Box>
-                    <Text fontWeight={active ? "semibold" : "normal"}>
+                    <Text fontWeight={active ? "semibold" : "normal"} fontSize="sm">
                       {item.label}
                     </Text>
                   </HStack>

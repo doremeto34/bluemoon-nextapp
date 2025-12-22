@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Input, HStack, Button } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Input, HStack, Button, Table, Badge } from "@chakra-ui/react";
 import { FiSearch, FiPlus, FiTrash2, FiEdit, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
 import { useState, useEffect } from "react";
@@ -22,15 +22,15 @@ export default function HouseholdPage() {
     }
     load();
   }, []);
-  
+
   const filteredVehicles = vehicles.filter((vehicle) => {
-    const matchesSearch = 
+    const matchesSearch =
       vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       vehicle.household_id?.toString().includes(searchTerm) ||
       vehicle.type.toString().toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   }
-);
+  );
 
   const ITEMS_PER_PAGE = 10;
   const totalPages = Math.ceil(filteredVehicles.length / ITEMS_PER_PAGE);
@@ -39,18 +39,18 @@ export default function HouseholdPage() {
   const currentVehicles = filteredVehicles.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
-      setCurrentPage(page);
-    };
-  
-    const handleEditVehicle = (vehicleId: number) => {
-      router.push(`/dashboard/vehicle/${vehicleId}/edit`);
-    };
-  
-    const handleRemoveVehicle = async (vehicleId: number) => {
-      //await deleteVehicleAction(vehicleId);
-      setVehicles(prev => prev.filter(v => v.id !== vehicleId));
-    };
-  
+    setCurrentPage(page);
+  };
+
+  const handleEditVehicle = (vehicleId: number) => {
+    router.push(`/dashboard/vehicle/${vehicleId}/edit`);
+  };
+
+  const handleRemoveVehicle = async (vehicleId: number) => {
+    //await deleteVehicleAction(vehicleId);
+    setVehicles(prev => prev.filter(v => v.id !== vehicleId));
+  };
+
   return (
     <Box>
       <Flex justify="space-between" align="center" mb={4}>
@@ -58,42 +58,42 @@ export default function HouseholdPage() {
           <Heading color="teal.700">Vehicle Management</Heading>
         </Box>
         <HStack gap={4}>
-            <Button
-              colorPalette="cyan"
-              bgGradient="to-r"
-              gradientFrom="cyan.500"
-              gradientTo="blue.500"
-              color="white"
-              _hover={{
-                transform: "translateY(-2px)",
-                boxShadow: "lg",
-              }}
-              onClick={() => router.push('/dashboard/vehicle/create')}
-            >
-              <HStack gap={2}>
-                <FiPlus />
-                <Text>Add Vehicle</Text>
-              </HStack>
-            </Button>
+          <Button
+            colorPalette="cyan"
+            bgGradient="to-r"
+            gradientFrom="cyan.500"
+            gradientTo="blue.500"
+            color="white"
+            _hover={{
+              transform: "translateY(-2px)",
+              boxShadow: "lg",
+            }}
+            onClick={() => router.push('/dashboard/vehicle/create')}
+          >
+            <HStack gap={2}>
+              <FiPlus />
+              <Text>Add Vehicle</Text>
+            </HStack>
+          </Button>
 
-            <Button
-              colorPalette="teal"
-              bgGradient="to-r"
-              gradientFrom="teal.500"
-              gradientTo="cyan.500"
-              color="white"
-              _hover={{
-                transform: "translateY(-2px)",
-                boxShadow: "lg",
-              }}
-              onClick={() => router.push('/dashboard/vehicle/bill')}
-            >
-              <HStack gap={2}>
-                <FiPlus />
-                <Text>Create Bill</Text>
-              </HStack>
-            </Button>
-          </HStack>
+          <Button
+            colorPalette="teal"
+            bgGradient="to-r"
+            gradientFrom="teal.500"
+            gradientTo="cyan.500"
+            color="white"
+            _hover={{
+              transform: "translateY(-2px)",
+              boxShadow: "lg",
+            }}
+            onClick={() => router.push('/dashboard/vehicle/bill')}
+          >
+            <HStack gap={2}>
+              <FiPlus />
+              <Text>Create Bill</Text>
+            </HStack>
+          </Button>
+        </HStack>
       </Flex>
 
       {/* Search and Filter */}
@@ -133,87 +133,30 @@ export default function HouseholdPage() {
         Showing {startIndex + 1}-{Math.min(endIndex, filteredVehicles.length)} of {filteredVehicles.length} vehicles
       </Text>
 
-      {/* Vehicles List */}
-      <Box bg="white" borderRadius="lg" boxShadow="md" overflow="hidden" mb={6}>
-        <VStack align="stretch" gap={0} divideY="1px" divideColor="gray.200">
-          {/* Table Header */}
-          <Flex
-            p={4}
-            bg="gray.50"
-            fontWeight="semibold"
-            color="gray.700"
-            display={{ base: "none", md: "flex" }}
-          >
-            <Box flex="0.5">ID</Box>
-            <Box flex="2">Name</Box>
-            <Box flex="1">Room</Box>
-            <Box flex="1">Type</Box>
-            <Box flex="1">Status</Box>
-            <Box flex="1">Actions</Box>
-          </Flex>
-
-          {/* Table Rows */}
+      <Table.Root size="sm" variant="outline" borderRadius="lg">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader w="8%">ID</Table.ColumnHeader>
+            <Table.ColumnHeader w="30%">Name</Table.ColumnHeader>
+            <Table.ColumnHeader w="15%">Room</Table.ColumnHeader>
+            <Table.ColumnHeader w="15%">Type</Table.ColumnHeader>
+            <Table.ColumnHeader w="15%">Status</Table.ColumnHeader>
+            <Table.ColumnHeader w="17%">Action</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {currentVehicles.map((vehicle) => (
-            <Flex
-              key={vehicle.id}
-              p={4}
-              _hover={{ bg: "gray.50" }}
-              transition="all 0.2s"
-              direction={{ base: "column", md: "row" }}
-              gap={{ base: 2, md: 0 }}
-            >
-              <Box flex="0.5" color="gray.600" fontSize={{ base: "sm", md: "md" }}>
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    ID:{' '}
-                  </Text>
-                  {vehicle.id}
-                </Text>
-              </Box>
-              <Box flex="2" fontWeight="medium" color="gray.700">
-                {vehicle.name}
-              </Box>
-              <Box flex="1">
-                <Text display={{ base: "inline", md: "block" }} fontSize={{ base: "sm", md: "md" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    Room:{' '}
-                  </Text>
-                  <Text as="span" color="teal.600" fontWeight="medium">
-                    {vehicle.household_id}
-                  </Text>
-                </Text>
-              </Box>
-              <Box flex="1" color="gray.600" fontSize={{ base: "sm", md: "md" }}>
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    Type:{' '}
-                  </Text>
-                  {vehicle.type}
-                </Text>
-              </Box>
-              <Box flex="1" color="gray.600" fontSize={{ base: "sm", md: "md" }}>
-                <Box
-                  width="fit-content"
-                  px={3}
-                  py={1}
-                  bg={
-                    vehicle.active
-                      ? "green.100"
-                      : "gray.100"
-                  }
-                  color={
-                    vehicle.active
-                      ? "green.700"
-                      : "gray.600"
-                  }
-                  borderRadius="md"
-                  fontSize="sm"
-                  fontWeight="semibold"
-                >
+            <Table.Row key={vehicle.id}>
+              <Table.Cell>{vehicle.id}</Table.Cell>
+              <Table.Cell>{vehicle.name}</Table.Cell>
+              <Table.Cell>{vehicle.household_id}</Table.Cell>
+              <Table.Cell>{vehicle.type}</Table.Cell>
+              <Table.Cell>
+                <Badge size="md" colorPalette={vehicle.active? "green" : "gray"}>
                   {vehicle.active ? "Active" : "Inactive"}
-                </Box>
-              </Box>
-              <Box flex="1" display={{ base: "none", md: "flex" }}>
+                </Badge>
+              </Table.Cell>
+              <Table.Cell>
                 <HStack gap={2}>
                   <Button
                     size="sm"
@@ -236,15 +179,15 @@ export default function HouseholdPage() {
                     </HStack>
                   </Button>
                 </HStack>
-              </Box>
-            </Flex>
+              </Table.Cell>
+            </Table.Row>
           ))}
-        </VStack>
-      </Box>
+        </Table.Body>
+      </Table.Root>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <Flex justify="center" align="center" gap={2}>
+        <Flex justify="center" align="center" gap={2} mt={4}>
           <Button
             variant="outline"
             colorPalette="teal"

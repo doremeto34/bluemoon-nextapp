@@ -1,8 +1,8 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Select, Portal, createListCollection } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Select, Portal, createListCollection, Spinner } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { createVehicleAction } from "@/lib/vehicle";
 import { useSearchParams } from "next/navigation";
@@ -14,7 +14,7 @@ const vehicleTypeCollection = createListCollection({
   ]
 });
 
-export default function VehicleCreatePage() {
+function VehicleCreatePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const householdId = searchParams.get("household_id");
@@ -71,10 +71,10 @@ export default function VehicleCreatePage() {
                   value={formData.room_number}
                   onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -89,10 +89,10 @@ export default function VehicleCreatePage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -106,10 +106,10 @@ export default function VehicleCreatePage() {
                   value={formData.plate_number}
                   onChange={(e) => setFormData({ ...formData, plate_number: e.target.value })}
                   required
-                  borderColor="gray.300"
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
                   _focus={{
-                    borderColor: 'teal.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
+                    borderColor: "teal.500",
                   }}
                 />
               </Box>
@@ -120,7 +120,7 @@ export default function VehicleCreatePage() {
                 </Text>
                 <Select.Root
                   collection={vehicleTypeCollection}
-                  size="sm"
+                  size="md"
                   width="100%"
                   multiple={false}
                   defaultValue={[formData.type]}
@@ -181,5 +181,13 @@ export default function VehicleCreatePage() {
         </Flex>
       </Box>
     </Box>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<Spinner color="teal.500" />}>
+      <VehicleCreatePage />
+    </Suspense>
   );
 }

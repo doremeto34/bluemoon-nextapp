@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { logoutAction } from "@/lib/actions";
 import { Box, Heading, Text, VStack, Flex, SimpleGrid } from "@chakra-ui/react";
 import { MdApartment, MdPeople, MdAttachMoney } from "react-icons/md";
-import { countHouseholdsAction, countPeopleAction, calculateMonthlyRevenueAction } from "@/lib/utils";
+import { countHouseholdsAction, countPeopleAction, calculateMonthlyRevenueAction } from "@/lib/serverUtils";
 
 export default async function Dashboard() {
   const cookieStore = await cookies();
@@ -16,9 +16,6 @@ export default async function Dashboard() {
   return (
     <Box>
       <Heading mb={4} color="teal.700">Dashboard Overview</Heading>
-      <Text color="gray.600" mb={6}>
-        Welcome to Bluemoon Apartment Management System
-      </Text>
 
       {/* Statistics Cards */}
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} mb={6}>

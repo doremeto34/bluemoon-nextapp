@@ -61,3 +61,36 @@ export async function updateMonthlyUtilityReadingAction(
     return { error: "Cannot update monthly fee record" };
   }
 }
+//Create monthly utility records
+export async function createMonthlyUtilityRecordAction(
+  household_id : number,
+  month : number,
+  year : number,
+  type : string,
+  amount : number
+){
+  try {
+    await sql`
+      INSERT INTO utility_fee_records (
+        household_id,
+        month,
+        year,
+        type,
+        amount,
+        status
+      )
+      SELECT
+        ${household_id},
+        ${month},
+        ${year},
+        ${type},
+        ${amount},
+        'pending'
+      WHERE ${amount} > 0
+    `;
+    revalidatePath('/dashboard/utility');
+  } catch (error) {
+    console.error('Error creating monthly utility records:', error);
+    throw error;
+  }
+}

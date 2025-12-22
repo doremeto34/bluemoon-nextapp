@@ -1,8 +1,9 @@
 'use client';
 
 import { Box, Heading, Text, VStack, Flex, HStack, Button, Select, Portal, createListCollection } from "@chakra-ui/react";
-import { FiCheckCircle, FiCircle, FiDollarSign } from "react-icons/fi";
-import { useState, useEffect } from "react";
+import { FiPlus } from "react-icons/fi";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/actions";
 import { MonthlyFeeRecord } from "@/types/monthly_fee_record";
 import UtilityReadingList from "@/components/UtilityReadingList";
@@ -28,22 +29,14 @@ const monthCollection = createListCollection({
 const yearCollection = createListCollection({
   items: YEARS.map((year) => ({ value: String(year), label: String(year) })),
 });
-const typeCollection = createListCollection({
-  items: [
-    { value: "Monthly", label: "Monthly" },
-    { value: "Vehicle", label: "Vehicle" },
-    { value: "Electric", label: "Electric" },
-    { value: "Water", label: "Water" },
-    { value: "Internet", label: "Internet" },
-  ],
-});
 
 export default function BillPage() {
   const currentDate = new Date();
+  const childRef = useRef<any>(null);
+  const router = useRouter();
   const [monthlyRecords, setMonthlyRecords] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
-  const [selectedType, setSelectedType] = useState("Monthly");
 
   useEffect(() => {
       const fetchData = async () => {
@@ -86,7 +79,7 @@ export default function BillPage() {
           <Select.Root 
             collection={monthCollection} 
             size="sm" 
-            width="40%"
+            width="35%"
             multiple={false}
             onValueChange={(details) => {
               setSelectedMonth(Number(details.value));
@@ -119,7 +112,7 @@ export default function BillPage() {
           <Select.Root
             collection={yearCollection}
             size="sm"
-            width="40%"
+            width="35%"
             multiple={false}
             onValueChange={(details) => {
               setSelectedYear(Number(details.value));
@@ -148,45 +141,45 @@ export default function BillPage() {
               </Select.Positioner>
             </Portal>
           </Select.Root>
-          
-          <Select.Root 
-            collection={typeCollection} 
-            size="sm" 
-            width="20%"
-            multiple={false}
-            onValueChange={(details) => {
-              setSelectedType(details.value[0]);
+
+          <Button 
+            width="15%" 
+            variant="solid"
+            colorPalette="cyan"
+            bgGradient="to-r"
+            gradientFrom="cyan.500"
+            gradientTo="blue.500"
+            _hover={{
+              transform: "translateY(-2px)",
+              boxShadow: "lg",
             }}
+            onClick={()=>childRef.current.createRecords()}
           >
-            <Select.HiddenSelect />
-            <Select.Label>Select type</Select.Label>
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText placeholder="Select type" />
-              </Select.Trigger>
-              <Select.IndicatorGroup>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {typeCollection.items.map((type) => (
-                    <Select.Item item={type} key={type.value}>
-                      {type.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
+            <FiPlus /> Add Records
+          </Button>
+
+          <Button 
+            width="15%" 
+            variant="solid"
+            colorPalette="teal"
+            bgGradient="to-r"
+            gradientFrom="teal.500"
+            gradientTo="cyan.500"
+            _hover={{
+              transform: "translateY(-2px)",
+              boxShadow: "lg",
+            }}
+            onClick={() => router.push('/dashboard/utility/bill')}
+          >
+            <FiPlus /> Add Bills
+          </Button>
 
         </Flex>
       </Box>
       <UtilityReadingList
+        ref={childRef}
         month={selectedMonth}
-         year={selectedYear}
+        year={selectedYear}
       />
     </Box>
   );

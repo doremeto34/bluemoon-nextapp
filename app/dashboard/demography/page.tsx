@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, Input, VStack, Flex, HStack, Button } from "@chakra-ui/react";
+import { Box, Heading, Text, Input, VStack, Flex, HStack, Button, Table } from "@chakra-ui/react";
 import { FiSearch, FiChevronLeft, FiChevronRight, FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ export default function DemographyPage() {
   }, []);
 
   const filteredPeople = people.filter((person) => {
-    const matchesSearch = 
+    const matchesSearch =
       person.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       person.household_id?.toString().includes(searchTerm) ||
       person.cccd.includes(searchTerm) ||
@@ -118,77 +118,34 @@ export default function DemographyPage() {
         Showing {startIndex + 1}-{Math.min(endIndex, filteredPeople.length)} of {filteredPeople.length} residents
       </Text>
 
-      {/* People List */}
-      <Box bg="white" borderRadius="lg" boxShadow="md" overflow="hidden" mb={6}>
-        <VStack align="stretch" gap={0} divideY="1px" divideColor="gray.200">
-          {/* Table Header */}
-          <Flex 
-            p={4} 
-            bg="gray.50" 
-            fontWeight="semibold" 
-            color="gray.700"
-            display={{ base: "none", md: "flex" }}
-          >
-            <Box flex="0.5">ID</Box>
-            <Box flex="2">Name</Box>
-            <Box flex="1.5">Date of Birth</Box>
-            <Box flex="1">Room</Box>
-            <Box flex="1.5">CCCD</Box>
-            <Box flex="1">Actions</Box>
-          </Flex>
-
-          {/* Table Rows */}
+      <Table.Root size="sm" variant="outline" borderRadius="lg">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader w="8%">ID</Table.ColumnHeader>
+            <Table.ColumnHeader w="25%">Name</Table.ColumnHeader>
+            <Table.ColumnHeader w="17%">Date of Birth</Table.ColumnHeader>
+            <Table.ColumnHeader w="15%">Room</Table.ColumnHeader>
+            <Table.ColumnHeader w="20%">CCCD</Table.ColumnHeader>
+            <Table.ColumnHeader w="25%">Action</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {currentPeople.map((person) => (
-            <Flex
-              key={person.id}
-              p={4}
-              _hover={{ bg: "gray.50" }}
-              transition="all 0.2s"
-              direction={{ base: "column", md: "row" }}
-              gap={{ base: 2, md: 0 }}
-            >
-              <Box flex="0.5" color="gray.600" fontSize={{ base: "sm", md: "md" }}>
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    ID:{' '}
-                  </Text>
-                  {person.id}
-                </Text>
-              </Box>
-              <Box flex="2" fontWeight="medium" color="gray.700">
-                {person.full_name}
-              </Box>
-              <Box flex="1.5" color="gray.600" fontSize={{ base: "sm", md: "md" }}>
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    Date of Birth:{' '}
-                  </Text>
-                  {new Date(person.ngay_sinh).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
+            <Table.Row key={person.id}>
+              <Table.Cell>{person.id}</Table.Cell>
+              <Table.Cell>{person.full_name}</Table.Cell>
+              <Table.Cell>
+                <Text>
+                  {new Date(person.ngay_sinh).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
                   })}
                 </Text>
-              </Box>
-              <Box flex="1">
-                <Text display={{ base: "inline", md: "block" }} fontSize={{ base: "sm", md: "md" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    Room:{' '}
-                  </Text>
-                  <Text as="span" color="teal.600" fontWeight="medium">
-                    {person.household_id}
-                  </Text>
-                </Text>
-              </Box>
-              <Box flex="1.5" color="gray.600" fontSize={{ base: "sm", md: "md" }}>
-                <Text display={{ base: "inline", md: "block" }}>
-                  <Text as="span" display={{ base: "inline", md: "none" }} fontWeight="medium" color="gray.700">
-                    CCCD:{' '}
-                  </Text>
-                  {person.cccd}
-                </Text>
-              </Box>
-              <Box flex="1" display={{ base: "none", md: "flex" }}>
+              </Table.Cell>
+              <Table.Cell>{person.household_id}</Table.Cell>
+              <Table.Cell>{person.cccd}</Table.Cell>
+              <Table.Cell>
                 <HStack gap={2}>
                   <Button
                     size="sm"
@@ -211,15 +168,15 @@ export default function DemographyPage() {
                     </HStack>
                   </Button>
                 </HStack>
-              </Box>
-            </Flex>
+              </Table.Cell>
+            </Table.Row>
           ))}
-        </VStack>
-      </Box>
+        </Table.Body>
+      </Table.Root>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <Flex justify="center" align="center" gap={2}>
+        <Flex justify="center" align="center" gap={2} mt={4}>
           <Button
             variant="outline"
             colorPalette="teal"

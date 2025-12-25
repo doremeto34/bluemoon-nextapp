@@ -44,10 +44,7 @@ export default function MonthlyFeeCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Create Monthly Fee Type</Heading>
-      <Text color="gray.600" mb={6}>
-        Add a new monthly fee type to the system
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create Monthly Fee Type</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

@@ -64,10 +64,7 @@ export default function DemographyEditPage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Edit Person - {formData.full_name}</Heading>
-      <Text color="gray.600" mb={6}>
-        Update person information
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Edit Person - {formData.full_name}</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

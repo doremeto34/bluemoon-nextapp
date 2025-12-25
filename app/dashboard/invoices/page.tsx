@@ -5,8 +5,9 @@ import { FiCheckCircle, FiCircle, FiDollarSign } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/actions";
 import { MonthlyFeeRecord } from "@/types/monthly_fee_record";
-import MonthlyBillList from "@/components/MonthlyBillList";
-import VehicleBillList from "@/components/VehicleBillList";
+import MonthlyInvoiceList from "@/components/MonthlyInvoicesList";
+import VehicleBillList from "@/components/VehicleInvoiceList";
+import UtilityInvoicesList from "@/components/UtilityInvoicesList";
 
 const YEARS = [2025, 2026, 2027];
 
@@ -39,7 +40,7 @@ const typeCollection = createListCollection({
   ],
 });
 
-export default function BillPage() {
+export default function InvoicePage() {
   const currentDate = new Date();
   const [monthlyRecords, setMonthlyRecords] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
@@ -75,10 +76,7 @@ export default function BillPage() {
 
   return (
     <Box>
-      <Heading mb={4} color="teal.700">Monthly Bills</Heading>
-      <Text color="gray.600" mb={6}>
-        View and manage monthly payment bills for all households
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Monthly Invoices</Heading>
 
       {/* Filter Section */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
@@ -186,7 +184,7 @@ export default function BillPage() {
         </Flex>
       </Box>
       {selectedType === "Monthly" && (
-        <MonthlyBillList
+        <MonthlyInvoiceList
           month={selectedMonth}
           year={selectedYear}
         />
@@ -195,6 +193,27 @@ export default function BillPage() {
         <VehicleBillList
           month={selectedMonth}
           year={selectedYear}
+        />
+      )}
+      {selectedType === "Electric" && (
+        <UtilityInvoicesList
+          month={selectedMonth}
+          year={selectedYear}
+          type={selectedType}
+        />
+      )}
+      {selectedType === "Water" && (
+        <UtilityInvoicesList
+          month={selectedMonth}
+          year={selectedYear}
+          type={selectedType}
+        />
+      )}
+      {selectedType === "Internet" && (
+        <UtilityInvoicesList
+          month={selectedMonth}
+          year={selectedYear}
+          type={selectedType}
         />
       )}
     </Box>

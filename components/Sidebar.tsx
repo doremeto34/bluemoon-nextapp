@@ -22,7 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Household", href: "/dashboard/household", icon: MdApartment },
   { label: "Demography", href: "/dashboard/demography", icon: MdOutlineAccountCircle },
   { label: "Fees", href: "/dashboard/fees", icon: FiDollarSign },
-  { label: "Bills", href: "/dashboard/bills", icon: FiFileText },
+  { label: "Invoices", href: "/dashboard/invoices", icon: FiFileText },
   { label: "Vehicle", href: "/dashboard/vehicle", icon: IoCarSport },
   { label: "Utility", href: "/dashboard/utility", icon: FcElectricity },
   { label: "Users", href: "/dashboard/users", icon: HiUsers },

@@ -104,8 +104,8 @@ const UtilityReadingList = forwardRef(function UtilityReadingList({
   const paidCount = monthlyRecords.filter((payment) => payment.paid).length;
 
   return (
-    <Flex>
-      <Table.Root size="sm" variant="outline" borderRadius="lg">
+    <VStack>
+      <Table.Root size="sm" variant="outline" rounded="lg">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader w="8%">Room</Table.ColumnHeader>
@@ -203,13 +203,12 @@ const UtilityReadingList = forwardRef(function UtilityReadingList({
           ))}
         </Table.Body>
       </Table.Root>
-      
       {monthlyRecords.length === 0 && (
-        <Box bg="white" p={8} borderRadius="lg" boxShadow="md" textAlign="center" mt={6}>
+        <Box bg="white" w="100%" p={8} borderRadius="lg" boxShadow="md" textAlign="center" mt={2}>
           <Text color="gray.500">No bills found for the selected period.</Text>
         </Box>
       )}
-    </Flex>
+    </VStack>
   );
 });
 

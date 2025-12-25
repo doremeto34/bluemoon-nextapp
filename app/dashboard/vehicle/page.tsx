@@ -55,7 +55,7 @@ export default function HouseholdPage() {
     <Box>
       <Flex justify="space-between" align="center" mb={4}>
         <Box>
-          <Heading color="teal.700">Vehicle Management</Heading>
+          <Heading color="teal.700" fontSize="2xl" fontWeight="normal">Vehicle Management</Heading>
         </Box>
         <HStack gap={4}>
           <Button

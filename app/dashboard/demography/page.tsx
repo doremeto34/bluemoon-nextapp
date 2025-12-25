@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, Input, VStack, Flex, HStack, Button, Table } from "@chakra-ui/react";
+import { Box, Heading, Text, Input, VStack, Flex, HStack, Button, IconButton, Table } from "@chakra-ui/react";
 import { FiSearch, FiChevronLeft, FiChevronRight, FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -57,10 +57,7 @@ export default function DemographyPage() {
     <Box>
       <Flex justify="space-between" align="center" mb={4}>
         <Box>
-          <Heading color="teal.700">Demography</Heading>
-          <Text color="gray.600" mt={1}>
-            View and search all residents in the building
-          </Text>
+          <Heading color="teal.700" fontSize="2xl" fontWeight="normal">Demography</Heading>
         </Box>
         <Button
           colorPalette="teal"
@@ -147,26 +144,24 @@ export default function DemographyPage() {
               <Table.Cell>{person.cccd}</Table.Cell>
               <Table.Cell>
                 <HStack gap={2}>
-                  <Button
+                  <IconButton
+                    rounded="full"
                     size="sm"
                     variant="outline"
                     colorPalette="black"
                     onClick={() => handleEditPerson(person.id)}
                   >
-                    <HStack gap={1}>
                       <FiEdit />
-                    </HStack>
-                  </Button>
-                  <Button
+                  </IconButton>
+                  <IconButton
+                    rounded="full"
                     size="sm"
                     variant="outline"
                     colorPalette="red"
                     onClick={() => handleRemovePerson(person.id)}
                   >
-                    <HStack gap={1}>
                       <FiTrash2 />
-                    </HStack>
-                  </Button>
+                  </IconButton>
                 </HStack>
               </Table.Cell>
             </Table.Row>

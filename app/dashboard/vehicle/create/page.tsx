@@ -52,10 +52,7 @@ function VehicleCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Add New Vehicle</Heading>
-      <Text color="gray.600" mb={6}>
-        Add a new vehicle to the system
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Add New Vehicle</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

@@ -32,7 +32,7 @@ export default function HouseholdPage() {
     <Box>
       <Flex justify="space-between" align="center" mb={4}>
         <Box>
-          <Heading color="teal.700">Household Management</Heading>
+          <Heading color="teal.700" fontSize="2xl" fontWeight="normal">Household Management</Heading>
         </Box>
         <Button
           colorPalette="teal"

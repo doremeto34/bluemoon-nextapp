@@ -94,3 +94,56 @@ export async function createMonthlyUtilityRecordAction(
     throw error;
   }
 }
+//Get monthly records
+export async function getMonthlyUtilityRecordsAction(
+  month: number,
+  year: number,
+  type: string
+) {
+  try {
+    const result = await sql`
+      SELECT
+        ufr.id,
+        ufr.household_id,
+        ufr.month,
+        ufr.year,
+        ufr.type,
+        ufr.amount,
+        ufr.status,
+        h.area,
+        h.floor,
+        p.full_name AS owner
+      FROM utility_fee_records ufr
+      JOIN households h
+        ON ufr.household_id = h.id
+      JOIN persons p
+        ON h.owner_id = p.id
+      WHERE ufr.month = ${month}
+        AND ufr.year = ${year}
+        AND ufr.type = ${type}
+      ORDER BY h.floor, h.id;
+    `;
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching monthly utility records:', error);
+    throw error;
+  }
+}
+//Update record status
+export async function updateMonthlyUtilityRecordStatusAction(
+  id: number,
+  status: string
+) {
+  try {
+    await sql`
+      UPDATE utility_fee_records
+      SET status = ${status}
+      WHERE id = ${id};
+    `;
+    revalidatePath('/dashboard/utility');
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating utility record status:', error);
+    return { error: "Failed to update utility record status" };
+  }
+}

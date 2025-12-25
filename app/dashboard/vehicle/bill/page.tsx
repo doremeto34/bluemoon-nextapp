@@ -1,61 +1,76 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Checkbox } from "@chakra-ui/react";
+import { Box, Heading, Text, Flex, Table, Button, HStack, Span, Input, Field, Checkbox, Select, Accordion, createListCollection, Portal } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getHouseholdsAction } from "@/lib/actions";
-import { addVehicleFeeRecordAction } from "@/lib/vehicle";
+import { addVehicleFeeRecordAction, getVehiclesAction } from "@/lib/vehicle";
 
-const MONTHS = [
-  { value: 1, label: "January" },
-  { value: 2, label: "February" },
-  { value: 3, label: "March" },
-  { value: 4, label: "April" },
-  { value: 5, label: "May" },
-  { value: 6, label: "June" },
-  { value: 7, label: "July" },
-  { value: 8, label: "August" },
-  { value: 9, label: "September" },
-  { value: 10, label: "October" },
-  { value: 11, label: "November" },
-  { value: 12, label: "December" },
-];
+const YEARS = [2025, 2026, 2027];
 
-const YEARS = [2025, 2024, 2023];
+const monthCollection = createListCollection({
+  items: [
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ],
+});
+const yearCollection = createListCollection({
+  items: YEARS.map((year) => ({ value: String(year), label: String(year) })),
+});
 
 export default function MonthlyFeeCreatePage() {
   const router = useRouter();
 
   const currentDate = new Date();
   const [households, setHouseholds] = useState<any[]>([]);
+  const [vehicles, setVehicles] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
-  const [motorbikeFee,setMotorbikeFee] = useState(0);
-  const [carFee,setCarFee] = useState(0);
+  const [motorbikeFee, setMotorbikeFee] = useState(0);
+  const [carFee, setCarFee] = useState(0);
   const [selectedHouseholds, setSelectedHouseholds] = useState<number[]>([]);
+  const [selectedVehicles, setSelectedVehicles] = useState<{id:number,type:string}[]>([]);
 
   useEffect(() => {
     async function load() {
-      const data = await getHouseholdsAction();
-      setHouseholds(data);
+      const householdsData = await getHouseholdsAction();
+      setHouseholds(householdsData);
+      const vehiclesData = await getVehiclesAction();
+      setVehicles(vehiclesData);
     }
     load();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    for (const householdId of selectedHouseholds) {
-      await addVehicleFeeRecordAction({
-        household_id: householdId,
-        month: selectedMonth,
-        year: selectedYear,
-        motorbikeFee: motorbikeFee,
-        carFee: carFee
-      });
+   
+    for (const vehicle of selectedVehicles) {
+      let amount = 0;
+      if(vehicle.type==="Xe máy"){
+        amount = motorbikeFee;
+      }else
+      if(vehicle.type==="Ô tô"){
+        amount = carFee;
+      }
+      await addVehicleFeeRecordAction(
+        vehicle.id,
+        selectedMonth,
+        selectedYear,
+        amount
+      );
     }
-    
+
     router.push('/dashboard/vehicle');
   };
 
@@ -74,105 +89,118 @@ export default function MonthlyFeeCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Create Vehicle Monthly Bills</Heading>
-      <Text color="gray.600" mb={6}>
-        Add monthly bills for all households
-      </Text>
-
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create Vehicle Monthly Bills</Heading>
+  
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
-          <SimpleGrid columns={2} gap="20px"> 
-            <Box flex="1">
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Month
-              </Text>
-              <Box
-                as="select"
-                //value={selectedMonth}
-                onChange={(e: any) => setSelectedMonth(Number(e.target.value))}
-                px={4}
-                py={2}
-                borderRadius="md"
-                borderWidth="1px"
-                borderColor="gray.300"
-                w="100%"
-                _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
-                }}
-              >
-                {MONTHS.map((month) => (
-                  <option key={month.value} value={month.value}>
-                    {month.label}
-                  </option>
-                ))}
-              </Box>
-            </Box>
+          <Flex gap={4} direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "end" }}>
 
-            <Box flex="1">
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Year
-              </Text>
-              <Box
-                as="select"
-                //value={selectedYear}
-                onChange={(e: any) => setSelectedYear(Number(e.target.value))}
-                px={4}
-                py={2}
-                borderRadius="md"
-                borderWidth="1px"
-                borderColor="gray.300"
-                w="100%"
-                _focus={{
-                  borderColor: 'teal.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-teal-500)',
-                }}
-              >
-                {YEARS.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </Box>
-            </Box>
+            <Select.Root
+              collection={monthCollection}
+              size="sm"
+              width="25%"
+              multiple={false}
+              defaultValue={[(currentDate.getMonth() + 1).toString()]}
+              onValueChange={(details) => {
+                setSelectedMonth(Number(details.value));
+              }}
+            >
+              <Select.HiddenSelect />
+              <Select.Label>Select month</Select.Label>
+              <Select.Control position="relative">
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Select month" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Portal>
+                <Select.Positioner>
+                  <Select.Content>
+                    {monthCollection.items.map((month) => (
+                      <Select.Item item={month} key={month.value}>
+                        {month.label}
+                        <Select.ItemIndicator />
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Positioner>
+              </Portal>
+            </Select.Root>
 
-            <Box flex="1">
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Motorbike Fee
-              </Text>
+            <Select.Root
+              collection={yearCollection}
+              size="sm"
+              width="25%"
+              multiple={false}
+              defaultValue={[currentDate.getFullYear().toString()]}
+              onValueChange={(details) => {
+                setSelectedYear(Number(details.value));
+              }}
+            >
+              <Select.HiddenSelect />
+              <Select.Label>Select year</Select.Label>
+              <Select.Control position="relative">
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Select year" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Portal>
+                <Select.Positioner>
+                  <Select.Content>
+                    {yearCollection.items.map((year) => (
+                      <Select.Item item={year} key={year.value}>
+                        {year.label}
+                        <Select.ItemIndicator />
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Positioner>
+              </Portal>
+            </Select.Root>
+            <Field.Root required w="25%">
+              <Field.Label>
+                Motorbike Fee <Field.RequiredIndicator />
+              </Field.Label>
               <Input
+                size="sm"
                 colorPalette={"teal"}
                 borderColor={"gray.300"}
                 _focus={{
                   borderColor: "teal.500",
                 }}
-                value = {motorbikeFee}
-                onChange={(e)=>setMotorbikeFee(Number(e.target.value))}
+                value={motorbikeFee}
+                onChange={(e) => setMotorbikeFee(Number(e.target.value))}
               />
-            </Box>
-
-            <Box flex="1">
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Car Fee
-              </Text>
+            </Field.Root>
+            <Field.Root required w="25%">
+              <Field.Label>
+                Car Fee <Field.RequiredIndicator />
+              </Field.Label>
               <Input
+                size="sm"
                 colorPalette={"teal"}
                 borderColor={"gray.300"}
                 _focus={{
                   borderColor: "teal.500",
                 }}
-                value = {carFee}
-                onChange={(e)=>setCarFee(Number(e.target.value))}
+                value={carFee}
+                onChange={(e) => setCarFee(Number(e.target.value))}
               />
-            </Box>
-
-          </SimpleGrid>
-          {/*Fee*/}
-
+            </Field.Root>
+          </Flex>
         </Box>
+      </Box>
+
+
+      <Box as="form" onSubmit={handleSubmit}>
         {/* Household List */}
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mt={6}>
-          <Text fontSize="lg" fontWeight="semibold" mb={4} color="teal.700">
+          <Text fontSize="lg" fontWeight="normal" mb={4} color="teal.700">
             Select Households
           </Text>
 
@@ -181,12 +209,12 @@ export default function MonthlyFeeCreatePage() {
             <Checkbox.Root
               colorPalette="teal"
               size="sm"
-              checked={selectedHouseholds.length === households.length}
+              checked={selectedVehicles.length === vehicles.length}
               onCheckedChange={(value) => {
                 if (value.checked) {
-                  setSelectedHouseholds(households.map((h) => h.id));
+                  setSelectedVehicles(vehicles.map((v) => ({id:v.id, type:v.type})));
                 } else {
-                  setSelectedHouseholds([]);
+                  setSelectedVehicles([]);
                 }
               }}
             >
@@ -196,58 +224,74 @@ export default function MonthlyFeeCreatePage() {
             </Checkbox.Root>
           </Flex>
 
-          {/* Table Header */}
-          <Flex
-            px={4}
-            py={2}
-            bg="gray.100"
-            borderRadius="md"
-            fontWeight="medium"
-            color="gray.700"
-          >
-            <Box flex="0.2">Select</Box>
-            <Box flex="0.5">ID</Box>
-            <Box flex="1">Owner</Box>
-            <Box flex="1">Area (m²)</Box>
-          </Flex>
-
-          {/* Household List */}
-          {households.map((h) => (
-            <Flex
-              key={h.id}
-              px={4}
-              py={3}
-              borderBottom="1px solid"
-              borderColor="gray.200"
-              align="center"
-            >
-              <Box flex="0.2">
-                <Checkbox.Root
-                  colorPalette="teal"
-                  size="sm"
-                  checked={selectedHouseholds.includes(h.id)}
-                  onCheckedChange={(value) => {
-                    if (value.checked) {
-                      setSelectedHouseholds((prev) => [...prev, h.id]);
-                    } else {
-                      setSelectedHouseholds((prev) =>
-                        prev.filter((id) => id !== h.id)
-                      );
+          <Accordion.Root rounded="lg" variant="enclosed" size="sm" multiple defaultValue={["b"]}>
+            {households.map((household, index) => (
+              <Accordion.Item key={index} value={household.id}>
+                <Accordion.ItemTrigger>
+                  <Span w="2%"></Span>
+                  <Span w="20%">{household.room}</Span>
+                  <Span w="78%">{household.owner}</Span>
+                  <Accordion.ItemIndicator />
+                </Accordion.ItemTrigger>
+                <Accordion.ItemContent>
+                  <Accordion.ItemBody>
+                    {vehicles.filter(
+                      (vehicle) => vehicle.household_id === household.id
+                    ).length === 0 ?
+                      <Text color="gray.500" fontSize="sm">
+                        No vehicles
+                      </Text>
+                      :
+                      <Table.Root size="sm" interactive>
+                        <Table.Header>
+                          <Table.Row>
+                            <Table.ColumnHeader w="10%">Select</Table.ColumnHeader>
+                            <Table.ColumnHeader w="30%">Vehicle name</Table.ColumnHeader>
+                            <Table.ColumnHeader w="30%">Plate</Table.ColumnHeader>
+                            <Table.ColumnHeader w="30%">Vehicle type</Table.ColumnHeader>
+                          </Table.Row>
+                        </Table.Header>
+                        <Table.Body>
+                          {vehicles
+                            .filter(
+                              (vehicle) => vehicle.household_id === household.id
+                            )
+                            .map((vehicle) => (
+                              <Table.Row key={vehicle.id}>
+                                <Table.Cell>
+                                  <Checkbox.Root
+                                    colorPalette="teal"
+                                    size="sm"
+                                    checked={selectedVehicles.some(v => v.id === vehicle.id && v.type === vehicle.type)}
+                                    onCheckedChange={(value) => {
+                                      if (value.checked) {
+                                        setSelectedVehicles((prev) => [...prev, { id: vehicle.id, type: vehicle.type }]);
+                                      } else {
+                                        setSelectedVehicles((prev) =>
+                                          prev.filter(v => v.id !== vehicle.id)
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    <Checkbox.Control />
+                                    <Checkbox.HiddenInput />
+                                  </Checkbox.Root>
+                                </Table.Cell>
+                                <Table.Cell>{vehicle.name}</Table.Cell>
+                                <Table.Cell>{vehicle.plate_number}</Table.Cell>
+                                <Table.Cell>{vehicle.type}</Table.Cell>
+                              </Table.Row>
+                            ))}
+                        </Table.Body>
+                      </Table.Root>
                     }
-                  }}
-                >
-                  <Checkbox.Control />
-                  <Checkbox.HiddenInput />
-                </Checkbox.Root>
-              </Box>
+                  </Accordion.ItemBody>
+                </Accordion.ItemContent>
+              </Accordion.Item>
+            ))}
+          </Accordion.Root>
 
-              <Box flex="0.5">{h.id}</Box>
-              <Box flex="1">{h.owner}</Box>
-              <Box flex="1">{h.area} m²</Box>
-            </Flex>
-          ))}
         </Box>
-
         {/* Action Buttons */}
         <Flex gap={3} mt="8">
           <Button

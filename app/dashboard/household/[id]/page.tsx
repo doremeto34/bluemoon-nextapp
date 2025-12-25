@@ -67,10 +67,7 @@ export default function HouseholdDetailPage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Room {household.room}</Heading>
-      <Text color="gray.600" mb={6}>
-        Detailed information and household members
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Room {household.room}</Heading>
 
       {/* Household Information */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>

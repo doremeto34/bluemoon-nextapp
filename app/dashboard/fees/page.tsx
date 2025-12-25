@@ -41,17 +41,14 @@ export default function FeePage() {
 
   return (
     <Box>
-      <Heading mb={4} color="teal.700">
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">
         Fee Management
       </Heading>
-      <Text color="gray.600" mb={6}>
-        Manage monthly fees and other one-time fees
-      </Text>
-
+      
       {/* Monthly Fee Section */}
       <Box mb={8}>
         <Flex justify="space-between" align="center" mb={4}>
-          <Heading size="lg" color="teal.600">
+          <Heading size="lg" color="teal.700" fontWeight="normal">
             Monthly Fee
           </Heading>
 
@@ -194,7 +191,7 @@ export default function FeePage() {
       {/* Other Fees Section */}
       <Box>
         <Flex justify="space-between" align="center" mb={4}>
-          <Heading size="lg" color="teal.600">
+          <Heading size="lg" color="teal.700" fontWeight="normal">
             Other Fees
           </Heading>
           <Button

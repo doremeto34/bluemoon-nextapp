@@ -81,8 +81,41 @@ export async function updateVehicleAction(vehicleId: number, data: {
     throw error;
   }
 }
+//Add vehicle monthly records
+export async function addVehicleFeeRecordAction(
+  vehicle_id: number,
+  month: number,
+  year: number,
+  amount: number
+) {
+  try {
+    if (amount <= 0) {
+      throw new Error("Amount must be greater than 0");
+    }
+    await sql`
+      INSERT INTO vehicle_fee_records (
+        month,
+        year,
+        vehicle_id,
+        amount,
+        status
+      )
+      VALUES (
+        ${month},
+        ${year},
+        ${vehicle_id},
+        ${amount},
+        'pending'
+      )
+    `;
+    revalidatePath('/dashboard/vehicle'); 
+  } catch (error) {
+    console.error('Error adding vehicle fee record:', error);
+    throw error;
+  }
+}
 //Add monthly vehicle fee record 
-export async function addVehicleFeeRecordAction(data: {
+export async function oldAddVehicleFeeRecordAction(data: {
   household_id: number;
   month: number;
   year: number;
@@ -131,45 +164,58 @@ export async function addVehicleFeeRecordAction(data: {
   }
 }
 //Get vehicle monthly records
-export async function getVehicleMonthlyFeeRecordsAction(month: number, year: number) {
+export async function getVehicleMonthlyFeeRecordsAction(
+  month: number,
+  year: number
+) {
   try {
     const result = await sql`
-      SELECT 
-        r.id,
-        r.household_id,
-        r.month,
-        r.year,
-        r.amount,
-        r.paid,
+      SELECT
+        v.name,
+        v.plate_number,
+        v.type,
+        vfr.id,
+        vfr.vehicle_id,
+        vfr.amount,
+        vfr.status,
+        h.id AS household_id,
         h.area,
-        h.floor,
         p.full_name AS owner
-      FROM vehicle_monthly_fee_records r
-      JOIN households h ON r.household_id = h.id
-      JOIN persons p ON h.owner_id = p.id
-      WHERE r.month = ${month}
-        AND r.year = ${year}
-      ORDER BY r.household_id ASC;
+      FROM vehicle_fee_records vfr
+      JOIN vehicles v
+        ON vfr.vehicle_id = v.id
+      JOIN households h
+        ON v.household_id = h.id
+      JOIN persons p
+        ON h.owner_id = p.id
+      WHERE vfr.month = ${month}
+        AND vfr.year = ${year}
+      ORDER BY h.id ASC;
     `;
+
     return result.rows;
   } catch (error) {
-    console.error("Error fetching vehicle monthly fee records:", error);
+    console.error("Error fetching vehicle fee records:", error);
     return [];
   }
 }
 
 //Update vehicle monthly records status
-export async function updateVehicleMonthlyFeeRecordStatusAction(id: number, paid: boolean) {
+export async function updateVehicleFeeRecordStatusAction(
+  id: number,
+  status: string
+) {
   try {
     await sql`
-      UPDATE vehicle_monthly_fee_records
-      SET paid = ${paid}
+      UPDATE vehicle_fee_records
+      SET status = ${status}
       WHERE id = ${id};
     `;
     revalidatePath("/dashboard/vehicle");
     return { success: true };
   } catch (e) {
-    return { error: "Cannot update vehicle monthly fee record status" };
+    console.error(e);
+    return { error: "Cannot update vehicle fee record status" };
   }
 }
 

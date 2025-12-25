@@ -94,7 +94,7 @@ export default function OnetimeFeeDetailPage() {
       </Button>
 
       <Flex justify="space-between" align="center" mb={4}>
-        <Heading color="teal.700">One-Time Fee Details</Heading>
+        <Heading color="teal.700" fontSize="2xl" fontWeight="normal">One-Time Fee Details</Heading>
         {!isEditing ? (
           <Button
             colorPalette="teal"
@@ -126,10 +126,6 @@ export default function OnetimeFeeDetailPage() {
           </HStack>
         )}
       </Flex>
-
-      <Text color="gray.600" mb={6}>
-        {isEditing ? 'Edit one-time fee information' : 'View one-time fee information'}
-      </Text>
 
       {/* Fee Information Card */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
@@ -259,8 +255,8 @@ export default function OnetimeFeeDetailPage() {
             </HStack>
           </Button>
         </Flex>
-        <VStack align="stretch" gap={3}>
-          <Box>
+        <HStack gap={3}>
+          <Box flex="1">
             <Text fontSize="sm" color="gray.600" mb={2}>
               Household ID
             </Text>
@@ -275,7 +271,7 @@ export default function OnetimeFeeDetailPage() {
               }}
             />
           </Box>
-          <Box>
+          <Box flex="1">
             <Text fontSize="sm" color="gray.600" mb={2}>
               Amount
             </Text>
@@ -290,7 +286,7 @@ export default function OnetimeFeeDetailPage() {
               }}
             />
           </Box>
-          <Box>
+          <Box flex="1">
             <Text fontSize="sm" color="gray.600" mb={2}>
               Date
             </Text>
@@ -305,7 +301,7 @@ export default function OnetimeFeeDetailPage() {
               }}
             />
           </Box>
-        </VStack>
+        </HStack>
       </Box>
 
       {/* Payment Records */}

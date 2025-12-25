@@ -51,10 +51,7 @@ export default function HouseholdEditPage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Edit Household - Room {formData.room}</Heading>
-      <Text color="gray.600" mb={6}>
-        Update household information
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Edit Household - Room {formData.room}</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

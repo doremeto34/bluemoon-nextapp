@@ -124,7 +124,7 @@ export default function MonthlyFeeCreatePage() {
           <Text>Back to Utility</Text>
         </HStack>
       </Button>
-      <Heading mb={4} color="teal.700">Create Utility Monthly Bills</Heading>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create Utility Monthly Bills</Heading>
 
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
@@ -413,34 +413,28 @@ export default function MonthlyFeeCreatePage() {
         </Box>
         {/* Household List */}
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mt={6}>
-          <Text fontSize="lg" fontWeight="semibold" mb={4} color="teal.700">
+          <Text fontSize="lg" fontWeight="normal" mb={4} color="teal.700">
             Select Households
           </Text>
-
-          {/* Select All */}
-          <Flex align="center" mb={4}>
-            <Checkbox.Root
-              colorPalette="teal"
-              size="sm"
-              checked={selectedHouseholds.length === households.length}
-              onCheckedChange={(value) => {
-                if (value.checked) {
-                  setSelectedHouseholds(households.map((h) => h.room));
-                } else {
-                  setSelectedHouseholds([]);
-                }
-              }}
-            >
-              <Checkbox.Control />
-              <Checkbox.Label ml={1}>Select All</Checkbox.Label>
-              <Checkbox.HiddenInput />
-            </Checkbox.Root>
-          </Flex>
 
           <Table.Root size="sm" variant="outline" borderRadius="lg">
             <Table.Header>
               <Table.Row>
-                <Table.ColumnHeader w="10%">Select</Table.ColumnHeader>
+                <Table.ColumnHeader w="10%"><Checkbox.Root
+                  colorPalette="teal"
+                  size="sm"
+                  checked={selectedHouseholds.length === households.length}
+                  onCheckedChange={(value) => {
+                    if (value.checked) {
+                      setSelectedHouseholds(households.map((h) => h.room));
+                    } else {
+                      setSelectedHouseholds([]);
+                    }
+                  }}
+                >
+                  <Checkbox.Control />
+                  <Checkbox.HiddenInput />
+                </Checkbox.Root></Table.ColumnHeader>
                 <Table.ColumnHeader w="15%">Household</Table.ColumnHeader>
                 <Table.ColumnHeader w="35%">Owner</Table.ColumnHeader>
                 <Table.ColumnHeader w="40%">
@@ -484,7 +478,7 @@ export default function MonthlyFeeCreatePage() {
                 </Table.Row>
               ))}
             </Table.Body>
-          </Table.Root>          
+          </Table.Root>
 
           {selectError && <Alert.Root status="error" size="sm" mt={6}>
             <Alert.Indicator />

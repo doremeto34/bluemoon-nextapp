@@ -1,23 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   Button,
   Input,
   HStack,
+  IconButton
 } from "@chakra-ui/react";
 import type { User } from "@/types/user";
 import { updateUserAction, deleteUserAction } from "@/lib/actions";
+import { getUsersAction } from "@/lib/actions";
+import { FiEdit, FiTrash2 , FiSave, FiX, FiDollarSign } from "react-icons/fi";
 
-interface UsersTableProps {
-  initialUsers: User[];
-}
-
-export default function UsersTable({ initialUsers }: UsersTableProps) {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+export default function UsersTable() {
+  const [users, setUsers] = useState<any[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getUsersAction();
+      setUsers(data);
+    };
+    fetchData();
+  },[]);
 
   function startEdit(user: User) {
     setEditingId(user.id);
@@ -42,14 +49,14 @@ export default function UsersTable({ initialUsers }: UsersTableProps) {
   }
 
   return (
-    <Table.Root size="md" striped>
+    <Table.Root size="sm" variant="outline" rounded="lg">
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeader>ID</Table.ColumnHeader>
-          <Table.ColumnHeader>Username</Table.ColumnHeader>
-          <Table.ColumnHeader>Password</Table.ColumnHeader>
-          <Table.ColumnHeader>Created At</Table.ColumnHeader>
-          <Table.ColumnHeader>Actions</Table.ColumnHeader>
+          <Table.ColumnHeader w="10%">ID</Table.ColumnHeader>
+          <Table.ColumnHeader w="30%">Username</Table.ColumnHeader>
+          <Table.ColumnHeader w="20%">Password</Table.ColumnHeader>
+          <Table.ColumnHeader w="25%">Created At</Table.ColumnHeader>
+          <Table.ColumnHeader w="15%">Actions</Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
 
@@ -62,7 +69,9 @@ export default function UsersTable({ initialUsers }: UsersTableProps) {
               {editingId === user.id ? (
                 <Input
                   size="sm"
+                  w="50%"
                   value={editName}
+                  colorPalette="teal"
                   onChange={(e) => setEditName(e.target.value)}
                 />
               ) : (
@@ -81,33 +90,45 @@ export default function UsersTable({ initialUsers }: UsersTableProps) {
             <Table.Cell>
               {editingId === user.id ? (
                 <HStack gap={2}>
-                  <Button
+                  <IconButton
                     size="sm"
-                    colorScheme="green"
+                    rounded="full"
+                    variant="outline"
+                    colorPalette="gray"
                     onClick={() => saveEdit(user.id)}
                   >
-                    Save
-                  </Button>
-                  <Button
+                    <FiSave/>
+                  </IconButton>
+                  <IconButton
                     size="sm"
+                    rounded="full"
                     variant="outline"
+                    colorPalette="red"
                     onClick={() => setEditingId(null)}
                   >
-                    Cancel
-                  </Button>
+                    <FiX/>
+                  </IconButton>
                 </HStack>
               ) : (
                 <HStack gap={2}>
-                  <Button size="sm" onClick={() => startEdit(user)}>
-                    Edit
-                  </Button>
-                  <Button
+                  <IconButton
                     size="sm"
-                    colorScheme="red"
+                    rounded="full"
+                    variant="outline"
+                    colorPalette="gray"
+                    onClick={() => startEdit(user)}
+                  >
+                    <FiEdit/>
+                  </IconButton>
+                  <IconButton
+                    size="sm"
+                    rounded="full"
+                    variant="outline"
+                    colorPalette="red"
                     onClick={() => removeUser(user.id)}
                   >
-                    Delete
-                  </Button>
+                    <FiTrash2 />
+                  </IconButton>
                 </HStack>
               )}
             </Table.Cell>

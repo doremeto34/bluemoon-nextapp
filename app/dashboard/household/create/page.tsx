@@ -44,10 +44,7 @@ export default function HouseholdCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Create New Household</Heading>
-      <Text color="gray.600" mb={6}>
-        Add a new household to the system
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create New Household</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

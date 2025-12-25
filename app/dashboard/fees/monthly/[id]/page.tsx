@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Badge, Switch } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave, FiCalendar, FiTrash2 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -55,7 +55,7 @@ export default function MonthlyFeeDetailPage() {
       </Button>
 
       <Flex justify="space-between" align="center" mb={4}>
-        <Heading color="teal.700">Monthly Fee Details</Heading>
+        <Heading color="teal.700" fontSize="2xl" fontWeight="normal">Monthly Fee Details</Heading>
         {!isEditing ? (
           <Button
             colorPalette="teal"
@@ -67,6 +67,7 @@ export default function MonthlyFeeDetailPage() {
         ) : (
           <HStack gap={2}>
             <Button
+              rounded="md"
               variant="outline"
               colorPalette="gray"
               onClick={() => {
@@ -77,6 +78,7 @@ export default function MonthlyFeeDetailPage() {
               Cancel
             </Button>
             <Button
+              rounded="md"
               colorPalette="teal"
               onClick={handleSave}
             >
@@ -88,10 +90,6 @@ export default function MonthlyFeeDetailPage() {
           </HStack>
         )}
       </Flex>
-
-      <Text color="gray.600" mb={6}>
-        {isEditing ? 'Edit monthly fee information' : 'View monthly fee information'}
-      </Text>
 
       {/* Fee Information Card */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
@@ -111,7 +109,7 @@ export default function MonthlyFeeDetailPage() {
                 value={feeData.name}
                 onChange={(e) => setFeeData({ ...feeData, name: e.target.value })}
                 size="lg"
-                fontWeight="semibold"
+                fontWeight="normal"
                 colorPalette={"teal"}
                 borderColor={"gray.300"}
                 _focus={{
@@ -120,36 +118,24 @@ export default function MonthlyFeeDetailPage() {
                 placeholder="Fee name"
               />
             ) : (
-              <Heading size="lg" color="teal.700">{feeData.name}</Heading>
+              <Heading size="md" color="teal.700">{feeData.name}</Heading>
             )}
-            <Box
-              display="inline-block"
-              mt={1}
-              px={3}
-              py={1}
-              bg={feeData.active ? "green.100" : "gray.100"}
-              color={feeData.active ? "green.700" : "gray.600"}
-              borderRadius="md"
-              fontSize="sm"
-              fontWeight="semibold"
-            >
-              {feeData.active ? "Active" : "Inactive"}
-            </Box>
           </Box>
         </Flex>
 
         <VStack align="stretch" gap={4}>
-          <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-            <Box>
+          <HStack gap={4}>
+            <Box flex="1">
               <Text fontSize="sm" color="gray.600" mb={2}>
                 Amount per Unit
               </Text>
               {isEditing ? (
                 <Input
                   type="number"
+                  w="75%"
                   value={feeData.amount}
                   onChange={(e) => setFeeData({ ...feeData, amount: Number(e.target.value) })}
-                  size="lg"
+                  size="md"
                   colorPalette={"teal"}
                   borderColor={"gray.300"}
                   _focus={{
@@ -162,7 +148,7 @@ export default function MonthlyFeeDetailPage() {
                 </Text>
               )}
             </Box>
-            <Box>
+            <Box flex="1">
               <Text fontSize="sm" color="gray.600" mb={2}>
                 Calculation Method
               </Text>
@@ -193,36 +179,31 @@ export default function MonthlyFeeDetailPage() {
                 <Text fontWeight="semibold" fontSize="2xl" color="teal.700">
                   {feeData.is_per_m2 ? "Per m²" : "Fixed Amount"}
                 </Text>
-              )}
-
-              {isEditing && (
-                <Flex gap={4} mt={2}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="active"
-                      checked={feeData.active}
-                      onChange={() => setFeeData({ ...feeData, active: true })}
-                      style={{ cursor: 'pointer' }}
-                    />
-                    <Text fontSize="sm">Active</Text>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="active"
-                      checked={!feeData.active}
-                      onChange={() => setFeeData({ ...feeData, active: false })}
-                      style={{ cursor: 'pointer' }}
-                    />
-                    <Text fontSize="sm">Inactive</Text>
-                  </label>
-                </Flex>
-              )}
-              
+              )}              
             </Box>
 
-          </SimpleGrid>
+            <Box flex="1">
+              <Text fontSize="sm" color="gray.900" mb={2}>
+                Status
+              </Text>
+              {isEditing ? (
+                <Switch.Root 
+                  colorPalette="teal"
+                  checked={feeData.active} 
+                  onChange={() => setFeeData({ ...feeData, active:!feeData.active })}
+                >
+                  <Switch.HiddenInput />
+                  <Switch.Control />
+                  <Switch.Label>Activate</Switch.Label>
+                </Switch.Root>               
+              ) : (
+                <Badge colorPalette={feeData.active ? "green" : "yellow"}>
+                  {feeData.active ? "Active" : "Inactive"}
+                </Badge>
+              )}
+            </Box>
+
+          </HStack>
 
           <Box>
             <Text fontSize="sm" color="gray.600" mb={2}>

@@ -1,4 +1,3 @@
-// src/lib/actions.ts
 'use server';
 
 import { sql } from "@vercel/postgres";
@@ -54,8 +53,6 @@ export async function loginAction(formData: FormData) {
   const cookieStore = await cookies();
   cookieStore.set("session", username, {
     httpOnly: true,
-    secure: true,
-    sameSite: "lax",
     path: "/",
   });
 
@@ -74,7 +71,7 @@ export async function logoutAction() {
 export async function getUsersAction() {
   try {
     const result = await sql`SELECT * FROM users ORDER BY id ASC;`;
-    return result.rows as User[];
+    return result.rows;
   } catch (err) {
     console.error("Fetch users error:", err);
     return [];

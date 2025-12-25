@@ -44,10 +44,7 @@ export default function DemographyCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Add New Person</Heading>
-      <Text color="gray.600" mb={6}>
-        Add a new person to the system
-      </Text>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Add New Person</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

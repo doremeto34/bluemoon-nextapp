@@ -118,7 +118,7 @@ export default function UtilityInvoicesList({
         </Stat.Root>
       </Flex>
 
-      <Table.Root size="sm" variant="outline" borderRadius="lg">
+      <Table.Root size="sm" variant="outline" borderRadius="lg" overflow="hidden">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader w="8%">Room</Table.ColumnHeader>
@@ -132,8 +132,8 @@ export default function UtilityInvoicesList({
         <Table.Body>
           {monthlyRecords.map((payment) => (
             <Table.Row key={payment.id}>
-              <Table.Cell>{payment.household_id}</Table.Cell>
-              <Table.Cell>{payment.owner}</Table.Cell>
+              <Table.Cell>{payment.room_number}</Table.Cell>
+              <Table.Cell>{payment.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : payment.owner}</Table.Cell>
               <Table.Cell>{monthCollection.items.find((m) => Number(m.value) === payment.month)?.label} {payment.year}</Table.Cell>
               <Table.Cell fontWeight="semibold">{payment.amount.toLocaleString() + "₫"}</Table.Cell>
               <Table.Cell>

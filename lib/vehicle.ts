@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 //Add Vehicle
 export async function createVehicleAction(data: {
-  household_id: string;
+  household_id: number;
   name: string;
   type: string;
   plate_number: string;
@@ -25,11 +25,17 @@ export async function createVehicleAction(data: {
 export async function getVehiclesAction() {
   try {
     const result = await sql`
-      SELECT * FROM vehicles ORDER BY id;
+      SELECT
+        v.*,
+        r.number AS room_number
+      FROM vehicles v
+      JOIN households h ON h.id = v.household_id
+      JOIN room r ON r.id = h.room
+      ORDER BY v.id;
     `;
     return result.rows;
   } catch (error) {
-    console.error('Error fetching vehicles:', error);
+    console.error("Error fetching vehicles:", error);
     throw error;
   }
 }
@@ -179,18 +185,22 @@ export async function getVehicleMonthlyFeeRecordsAction(
         vfr.amount,
         vfr.status,
         h.id AS household_id,
-        h.area,
+        rm.id AS room_id,
+        rm.number AS room_number,
+        rm.area,
         p.full_name AS owner
       FROM vehicle_fee_records vfr
       JOIN vehicles v
         ON vfr.vehicle_id = v.id
       JOIN households h
         ON v.household_id = h.id
+      JOIN room rm
+        ON h.room = rm.id
       JOIN persons p
         ON h.owner_id = p.id
       WHERE vfr.month = ${month}
         AND vfr.year = ${year}
-      ORDER BY h.id ASC;
+      ORDER BY rm.number ASC;
     `;
 
     return result.rows;

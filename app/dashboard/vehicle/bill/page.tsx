@@ -4,8 +4,8 @@ import { Box, Heading, Text, Flex, Table, Button, HStack, Span, Input, Field, Ch
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getHouseholdsAction } from "@/lib/actions";
 import { addVehicleFeeRecordAction, getVehiclesAction } from "@/lib/vehicle";
+import { getHouseholdsAction } from "@/lib/household";
 
 const YEARS = [2025, 2026, 2027];
 
@@ -40,7 +40,8 @@ export default function MonthlyFeeCreatePage() {
   const [motorbikeFee, setMotorbikeFee] = useState(0);
   const [carFee, setCarFee] = useState(0);
   const [selectedHouseholds, setSelectedHouseholds] = useState<number[]>([]);
-  const [selectedVehicles, setSelectedVehicles] = useState<{id:number,type:string}[]>([]);
+  const [selectedVehicles, setSelectedVehicles] = useState<{ id: number, type: string }[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -54,15 +55,15 @@ export default function MonthlyFeeCreatePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   
+
     for (const vehicle of selectedVehicles) {
       let amount = 0;
-      if(vehicle.type==="Xe máy"){
+      if (vehicle.type === "Xe máy") {
         amount = motorbikeFee;
-      }else
-      if(vehicle.type==="Ô tô"){
-        amount = carFee;
-      }
+      } else
+        if (vehicle.type === "Ô tô") {
+          amount = carFee;
+        }
       await addVehicleFeeRecordAction(
         vehicle.id,
         selectedMonth,
@@ -90,7 +91,7 @@ export default function MonthlyFeeCreatePage() {
       </Button>
 
       <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create Vehicle Monthly Bills</Heading>
-  
+
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
           <Flex gap={4} direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "end" }}>
@@ -100,6 +101,9 @@ export default function MonthlyFeeCreatePage() {
               size="sm"
               width="25%"
               multiple={false}
+              unmountOnExit={true}
+              open={isOpen}
+              onOpenChange={(e) => setIsOpen(e.open)}
               defaultValue={[(currentDate.getMonth() + 1).toString()]}
               onValueChange={(details) => {
                 setSelectedMonth(Number(details.value));
@@ -115,18 +119,20 @@ export default function MonthlyFeeCreatePage() {
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
-                <Select.Positioner>
-                  <Select.Content>
-                    {monthCollection.items.map((month) => (
-                      <Select.Item item={month} key={month.value}>
-                        {month.label}
-                        <Select.ItemIndicator />
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Positioner>
-              </Portal>
+              {isOpen && (
+                <Portal>
+                  <Select.Positioner>
+                    <Select.Content>
+                      {monthCollection.items.map((month) => (
+                        <Select.Item item={month} key={month.value}>
+                          {month.label}
+                          <Select.ItemIndicator />
+                        </Select.Item>
+                      ))}
+                    </Select.Content>
+                  </Select.Positioner>
+                </Portal>
+              )}
             </Select.Root>
 
             <Select.Root
@@ -197,7 +203,7 @@ export default function MonthlyFeeCreatePage() {
       </Box>
 
 
-      <Box as="form" onSubmit={handleSubmit}>
+      <Box as="form" onSubmit={handleSubmit} zIndex={9999}>
         {/* Household List */}
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mt={6}>
           <Text fontSize="lg" fontWeight="normal" mb={4} color="teal.700">
@@ -212,7 +218,7 @@ export default function MonthlyFeeCreatePage() {
               checked={selectedVehicles.length === vehicles.length}
               onCheckedChange={(value) => {
                 if (value.checked) {
-                  setSelectedVehicles(vehicles.map((v) => ({id:v.id, type:v.type})));
+                  setSelectedVehicles(vehicles.map((v) => ({ id: v.id, type: v.type })));
                 } else {
                   setSelectedVehicles([]);
                 }
@@ -230,7 +236,7 @@ export default function MonthlyFeeCreatePage() {
                 <Accordion.ItemTrigger>
                   <Span w="2%"></Span>
                   <Span w="20%">{household.room}</Span>
-                  <Span w="78%">{household.owner}</Span>
+                  <Span w="78%">{household.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : household.owner}</Span>
                   <Accordion.ItemIndicator />
                 </Accordion.ItemTrigger>
                 <Accordion.ItemContent>

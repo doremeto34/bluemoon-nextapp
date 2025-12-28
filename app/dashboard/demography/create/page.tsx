@@ -1,30 +1,54 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Select, Portal, createListCollection } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createPersonAction } from "@/lib/actions";
-import { MdBorderColor } from "react-icons/md";
+import { createPersonAction } from "@/lib/demography";
+import { getRoomOptionsAction } from "@/lib/household"
+
+interface FormData {
+  full_name: string;
+  ngay_sinh: string;
+  cccd: string;
+  household_id: number | null;
+}
 
 export default function DemographyCreatePage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
     full_name: "",
     ngay_sinh: "",
     cccd: "",
-    household_id: "",
+    household_id: null,
   });
+  const [roomCollection, setRoomCollection] = useState(() =>
+    createListCollection<{ value: number; label: string }>({ items: [] })
+  );
+
+  useEffect(() => {
+    async function loadRooms() {
+      const rooms = await getRoomOptionsAction();
+
+      setRoomCollection(
+        createListCollection({
+          items: rooms
+        })
+      );
+    }
+    loadRooms();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    await createPersonAction({
-      full_name: formData.full_name,
-      ngay_sinh: formData.ngay_sinh,
-      cccd: formData.cccd,
-      household_id: formData.household_id ? Number(formData.household_id) : null,
-    });    
+
+    await createPersonAction(
+      formData.full_name,
+      formData.ngay_sinh,
+      formData.cccd,
+      formData.household_id,
+    );
 
     router.push('/dashboard/demography');
   };
@@ -108,19 +132,43 @@ export default function DemographyCreatePage() {
 
               <Box>
                 <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Household ID (Room)
+                  Room
                 </Text>
-                <Input
-                  type="number"
-                  placeholder="e.g., 101 (optional)"
-                  value={formData.household_id}
-                  onChange={(e) => setFormData({ ...formData, household_id: e.target.value })}
-                  colorPalette={"teal"}
-                  borderColor={"gray.300"}
-                  _focus={{
-                    borderColor: "teal.500",
+                <Select.Root
+                  collection={roomCollection}
+                  size="md"
+                  width="100%"
+                  multiple={false}
+                  open={isOpen}
+                  onOpenChange={(e) => setIsOpen(e.open)}
+                  onValueChange={(details) => {
+                    setFormData({ ...formData, household_id: Number(details.value) });
                   }}
-                />
+                >
+                  <Select.HiddenSelect />
+                  <Select.Control position="relative" borderColor="gray.300">
+                    <Select.Trigger>
+                      <Select.ValueText placeholder="Select room" />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                      <Select.ClearTrigger />
+                      <Select.Indicator />
+                    </Select.IndicatorGroup>
+                  </Select.Control>
+                  {isOpen && <Portal>
+                    <Select.Positioner pointerEvents="auto">
+                      <Select.Content w="100%">
+                        {roomCollection.items.map((item) => (
+                          <Select.Item item={item} key={item.value}>
+                            {item.label}
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Portal>
+                  }
+                </Select.Root>
                 <Text fontSize="xs" color="gray.500" mt={1}>
                   Leave empty if not assigned to a household
                 </Text>

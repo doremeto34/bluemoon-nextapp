@@ -40,6 +40,9 @@ export default function MonthlyFeeCreatePage() {
   const router = useRouter();
 
   const currentDate = new Date();
+  const [isOpenMonth, setIsOpenMonth] = useState(false);
+  const [isOpenYear, setIsOpenYear] = useState(false);
+  const [isOpenType, setIsOpenType] = useState(false);
   const [households, setHouseholds] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
@@ -83,8 +86,9 @@ export default function MonthlyFeeCreatePage() {
     } else {
       setSelectError(false);
     }
-    for (const room of selectedHouseholds) {
-      const household = households.find(h => h.room === room);
+
+    for (const household_id of selectedHouseholds) {
+      const household = households.find(h => h.household_id === household_id);
       let amount;
       if (selectedType === "Electric") {
         if (!isTierAscending(electricityTiers)) {
@@ -104,7 +108,7 @@ export default function MonthlyFeeCreatePage() {
             amount = household.internet_fee;
           }
       if (amount > 0) {
-        await createMonthlyUtilityRecordAction(room, selectedMonth, selectedYear, selectedType, amount);
+        await createMonthlyUtilityRecordAction(household_id, selectedMonth, selectedYear, selectedType, amount);
       }
     }
     router.push('/dashboard/utility');
@@ -135,6 +139,8 @@ export default function MonthlyFeeCreatePage() {
               size="sm"
               width="40%"
               multiple={false}
+              open={isOpenMonth}
+              onOpenChange={(e) => setIsOpenMonth(e.open)}
               defaultValue={[(currentDate.getMonth() + 1).toString()]}
               onValueChange={(details) => {
                 setSelectedMonth(Number(details.value));
@@ -150,7 +156,7 @@ export default function MonthlyFeeCreatePage() {
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
+              {isOpenMonth && <Portal>
                 <Select.Positioner>
                   <Select.Content>
                     {monthCollection.items.map((month) => (
@@ -162,13 +168,15 @@ export default function MonthlyFeeCreatePage() {
                   </Select.Content>
                 </Select.Positioner>
               </Portal>
+              }
             </Select.Root>
-
             <Select.Root
               collection={yearCollection}
               size="sm"
               width="40%"
               multiple={false}
+              open={isOpenYear}
+              onOpenChange={(e) => setIsOpenYear(e.open)}
               defaultValue={[currentDate.getFullYear().toString()]}
               onValueChange={(details) => {
                 setSelectedYear(Number(details.value));
@@ -184,7 +192,7 @@ export default function MonthlyFeeCreatePage() {
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
+              {isOpenYear && <Portal>
                 <Select.Positioner>
                   <Select.Content>
                     {yearCollection.items.map((year) => (
@@ -196,6 +204,7 @@ export default function MonthlyFeeCreatePage() {
                   </Select.Content>
                 </Select.Positioner>
               </Portal>
+              }
             </Select.Root>
 
             <Select.Root
@@ -203,6 +212,8 @@ export default function MonthlyFeeCreatePage() {
               size="sm"
               width="20%"
               multiple={false}
+              open={isOpenType}
+              onOpenChange={(e) => setIsOpenType(e.open)}
               defaultValue={["Electric"]}
               onValueChange={(details) => {
                 setSelectedType(details.value[0]);
@@ -219,7 +230,7 @@ export default function MonthlyFeeCreatePage() {
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
+              {isOpenType && <Portal>
                 <Select.Positioner>
                   <Select.Content>
                     {typeCollection.items.map((type) => (
@@ -231,6 +242,7 @@ export default function MonthlyFeeCreatePage() {
                   </Select.Content>
                 </Select.Positioner>
               </Portal>
+              }
             </Select.Root>
 
           </Flex>
@@ -417,7 +429,7 @@ export default function MonthlyFeeCreatePage() {
             Select Households
           </Text>
 
-          <Table.Root size="sm" variant="outline" borderRadius="lg">
+          <Table.Root size="sm" variant="outline" borderRadius="lg" overflow="hidden">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader w="10%"><Checkbox.Root
@@ -426,7 +438,7 @@ export default function MonthlyFeeCreatePage() {
                   checked={selectedHouseholds.length === households.length}
                   onCheckedChange={(value) => {
                     if (value.checked) {
-                      setSelectedHouseholds(households.map((h) => h.room));
+                      setSelectedHouseholds(households.map((h) => h.household_id));
                     } else {
                       setSelectedHouseholds([]);
                     }
@@ -452,13 +464,13 @@ export default function MonthlyFeeCreatePage() {
                     <Checkbox.Root
                       colorPalette="teal"
                       size="sm"
-                      checked={selectedHouseholds.includes(h.room)}
+                      checked={selectedHouseholds.includes(h.household_id)}
                       onCheckedChange={(value) => {
                         if (value.checked) {
-                          setSelectedHouseholds((prev) => [...prev, h.room]);
+                          setSelectedHouseholds((prev) => [...prev, h.household_id]);
                         } else {
                           setSelectedHouseholds((prev) =>
-                            prev.filter((id) => id !== h.room)
+                            prev.filter((id) => id !== h.household_id)
                           );
                         }
                       }}
@@ -467,7 +479,7 @@ export default function MonthlyFeeCreatePage() {
                       <Checkbox.HiddenInput />
                     </Checkbox.Root>
                   </Table.Cell>
-                  <Table.Cell>{h.room}</Table.Cell>
+                  <Table.Cell>{h.room_number}</Table.Cell>
                   <Table.Cell>{h.owner}</Table.Cell>
                   <Table.Cell>
                     {selectedType === "Electric" ? h.electricity_usage + "kWh"

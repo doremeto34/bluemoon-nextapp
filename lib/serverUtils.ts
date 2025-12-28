@@ -21,21 +21,40 @@ export async function calculateMonthlyRevenueAction(month: number, year: number)
       AND year = ${year}  `;
   return Number(result.rows[0].total_revenue) || 0;
 }
-//Calculate electric fee
-export const calculateElectricFee = async (usage: number, electricityTiers : {limit: number, price: number}[]) => {
-  let remainingUsage = usage;
-  let total = 0;
-  let previousLimit = 0;
-  for (let i = 0; i < electricityTiers.length; i++) {
-    const { limit, price } = electricityTiers[i];
-    const isLastTier = i === electricityTiers.length - 1;
-    const tierUsage = isLastTier
-      ? remainingUsage
-      : Math.min(remainingUsage, limit - previousLimit);
-    if (tierUsage <= 0) break;
-    total += tierUsage * price;
-    remainingUsage -= tierUsage;
-    previousLimit = limit;
-  }
-  return total;
-};
+//Get last 12 months monthly receive
+export async function getLast12MonthsRevenueAction() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+
+  const result = await sql`
+    SELECT
+      year,
+      month,
+      SUM(amount) AS total
+    FROM monthly_fee_records
+    WHERE (year, month) >= (${start.getFullYear()}, ${start.getMonth() + 1})
+    GROUP BY year, month
+    ORDER BY year, month;
+  `;
+
+  return result.rows;
+} 
+//Get last 12 months vehicle receive
+export async function getLast12MonthsVehicleRevenueAction() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+
+  const result = await sql`
+    SELECT
+      year,
+      month,
+      SUM(amount) AS total
+    FROM vehicle_fee_records
+    WHERE (year, month) >= (${start.getFullYear()}, ${start.getMonth() + 1})
+      AND status = 'paid'
+    GROUP BY year, month
+    ORDER BY year, month;
+  `;
+
+  return result.rows;
+}

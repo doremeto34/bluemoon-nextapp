@@ -4,7 +4,7 @@ import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid } f
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addMonthlyFeeTypeAction } from "@/lib/actions";
+import { addMonthlyFeeTypeAction } from "@/lib/fee";
 
 export default function MonthlyFeeCreatePage() {
   const router = useRouter();

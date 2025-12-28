@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { MonthlyFeeType } from "@/types/monthly_fee_type";
 import type { OneTimeFeeType } from "@/types/onetime_fee_type";
-import { getMonthlyFeeAction, getOneTimeFeeAction } from "@/lib/actions";
+import { getMonthlyFeeAction, getOneTimeFeeAction } from "@/lib/fee";
 
 export default function FeePage() {
   const router = useRouter();

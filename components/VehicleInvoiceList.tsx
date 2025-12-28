@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getVehicleMonthlyFeeRecordsAction, updateVehicleFeeRecordStatusAction } from "@/lib/vehicle";
 import { Box, Table, Text, Span, Flex, Accordion, IconButton, Badge, Stat, HStack, Icon, FormatNumber, createListCollection } from "@chakra-ui/react";
 import { FiCheck, FiX, FiDollarSign } from "react-icons/fi";
-import { getHouseholdsAction } from "@/lib/actions"
+import { getHouseholdsAction } from "@/lib/household"
 
 const monthCollection = createListCollection({
   items: [
@@ -177,7 +177,7 @@ export default function MonthlyBillList({
                 <Accordion.ItemTrigger flex="93%">
                   <Accordion.ItemIndicator />
                   <Span w="35%">{household.room}</Span>
-                  <Span w="65%">{household.owner}</Span>
+                  <Span w="65%">{household.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : household.owner}</Span>
                 </Accordion.ItemTrigger>
                 <IconButton
                   size="sm"

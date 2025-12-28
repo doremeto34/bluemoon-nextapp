@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const session = req.cookies.get("session")?.value;
 
   const isDashboard = req.nextUrl.pathname.startsWith("/dashboard");

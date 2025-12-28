@@ -1,10 +1,10 @@
 'use client';
 
-import { Box, Heading, Text, Input, VStack, Flex, HStack, Button, IconButton, Table } from "@chakra-ui/react";
+import { Box, Heading, Text, Input, Pagination, ButtonGroup, Flex, HStack, Button, IconButton, Table } from "@chakra-ui/react";
 import { FiSearch, FiChevronLeft, FiChevronRight, FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getPersonsAction, deletePersonAction } from "@/lib/actions";
+import { getPersonsAction, deletePersonAction } from "@/lib/demography";
 import type { Person } from "@/types/person";
 
 const ITEMS_PER_PAGE = 10;
@@ -14,7 +14,7 @@ export default function DemographyPage() {
 
   const [people, setPeople] = useState<Person[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,12 +36,12 @@ export default function DemographyPage() {
   });
 
   const totalPages = Math.ceil(filteredPeople.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentPeople = filteredPeople.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setPage(page);
   };
 
   const handleEditPerson = (personId: number) => {
@@ -98,7 +98,7 @@ export default function DemographyPage() {
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
-                setCurrentPage(1);
+                setPage(1);
               }}
               colorPalette={"teal"}
               borderColor={"gray.300"}
@@ -115,7 +115,7 @@ export default function DemographyPage() {
         Showing {startIndex + 1}-{Math.min(endIndex, filteredPeople.length)} of {filteredPeople.length} residents
       </Text>
 
-      <Table.Root size="sm" variant="outline" borderRadius="lg">
+      <Table.Root size="sm" variant="outline" borderRadius="lg" overflow="hidden">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader w="8%">ID</Table.ColumnHeader>
@@ -140,7 +140,7 @@ export default function DemographyPage() {
                   })}
                 </Text>
               </Table.Cell>
-              <Table.Cell>{person.household_id}</Table.Cell>
+              <Table.Cell>{person.room_number}</Table.Cell>
               <Table.Cell>{person.cccd}</Table.Cell>
               <Table.Cell>
                 <HStack gap={2}>
@@ -151,7 +151,7 @@ export default function DemographyPage() {
                     colorPalette="black"
                     onClick={() => handleEditPerson(person.id)}
                   >
-                      <FiEdit />
+                    <FiEdit />
                   </IconButton>
                   <IconButton
                     rounded="full"
@@ -160,7 +160,7 @@ export default function DemographyPage() {
                     colorPalette="red"
                     onClick={() => handleRemovePerson(person.id)}
                   >
-                      <FiTrash2 />
+                    <FiTrash2 />
                   </IconButton>
                 </HStack>
               </Table.Cell>
@@ -169,48 +169,43 @@ export default function DemographyPage() {
         </Table.Body>
       </Table.Root>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <Flex justify="center" align="center" gap={2} mt={4}>
-          <Button
-            variant="outline"
-            colorPalette="teal"
-            size="sm"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <FiChevronLeft />
-          </Button>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <Button
-              key={page}
-              size="sm"
-              colorPalette="teal"
-              variant={currentPage === page ? "solid" : "outline"}
-              onClick={() => handlePageChange(page)}
-            >
-              {page}
-            </Button>
-          ))}
-
-          <Button
-            variant="outline"
-            colorPalette="teal"
-            size="sm"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <FiChevronRight />
-          </Button>
-        </Flex>
-      )}
-
       {currentPeople.length === 0 && (
         <Box bg="white" p={8} borderRadius="lg" boxShadow="md" textAlign="center">
           <Text color="gray.500">No residents found matching your search.</Text>
         </Box>
       )}
+      
+      {/* Pagination */}
+      <Pagination.Root
+        count={people.length}
+        pageSize={ITEMS_PER_PAGE}
+        page={page}
+        onPageChange={(e) => setPage(e.page)}
+        mt={4}
+      >
+        <ButtonGroup variant="ghost" size="sm">
+          <Pagination.PrevTrigger asChild>
+            <IconButton>
+              <FiChevronLeft />
+            </IconButton>
+          </Pagination.PrevTrigger>
+
+          <Pagination.Items
+            render={(page) => (
+              <IconButton variant={{ base: "ghost", _selected: "outline" }}>
+                {page.value}
+              </IconButton>
+            )}
+          />
+
+          <Pagination.NextTrigger asChild>
+            <IconButton>
+              <FiChevronRight />
+            </IconButton>
+          </Pagination.NextTrigger>
+        </ButtonGroup>
+      </Pagination.Root>
+
     </Box>
   );
 }

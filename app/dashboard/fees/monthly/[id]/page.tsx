@@ -4,7 +4,7 @@ import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Ba
 import { FiArrowLeft, FiSave, FiCalendar, FiTrash2 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getMonthlyFeeTypeByIdAction, updateMonthlyFeeTypeAction } from "@/lib/actions";
+import { getMonthlyFeeTypeByIdAction, updateMonthlyFeeTypeAction } from "@/lib/fee";
 import type { MonthlyFeeType } from "@/types/monthly_fee_type";
 
 export default function MonthlyFeeDetailPage() {
@@ -108,7 +108,6 @@ export default function MonthlyFeeDetailPage() {
               <Input
                 value={feeData.name}
                 onChange={(e) => setFeeData({ ...feeData, name: e.target.value })}
-                size="lg"
                 fontWeight="normal"
                 colorPalette={"teal"}
                 borderColor={"gray.300"}
@@ -143,8 +142,8 @@ export default function MonthlyFeeDetailPage() {
                   }}
                 />
               ) : (
-                <Text fontWeight="semibold" fontSize="2xl" color="teal.700">
-                  ${feeData.amount}
+                <Text fontWeight="semibold" fontSize="xl" color="teal.700">
+                  {feeData.amount}₫
                 </Text>
               )}
             </Box>
@@ -154,29 +153,18 @@ export default function MonthlyFeeDetailPage() {
               </Text>
               {isEditing ? (
                 <Flex gap={4} mt={2}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="is_per_m2"
-                      checked={!feeData.is_per_m2}
-                      onChange={() => setFeeData({ ...feeData, is_per_m2: false })}
-                      style={{ cursor: 'pointer' }}
-                    />
-                    <Text fontSize="sm">Fixed Amount</Text>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="is_per_m2"
-                      checked={feeData.is_per_m2}
-                      onChange={() => setFeeData({ ...feeData, is_per_m2: true })}
-                      style={{ cursor: 'pointer' }}
-                    />
-                    <Text fontSize="sm">Per m²</Text>
-                  </label>
+                  <Switch.Root
+                    colorPalette="teal"
+                    checked={feeData.is_per_m2}
+                    onChange={() => setFeeData({ ...feeData, is_per_m2: !feeData.is_per_m2 })}
+                  >
+                    <Switch.HiddenInput />
+                    <Switch.Control />
+                    <Switch.Label>Per m²</Switch.Label>
+                  </Switch.Root>
                 </Flex>
               ) : (
-                <Text fontWeight="semibold" fontSize="2xl" color="teal.700">
+                <Text fontWeight="semibold" fontSize="xl" color="teal.700">
                   {feeData.is_per_m2 ? "Per m²" : "Fixed Amount"}
                 </Text>
               )}              
@@ -197,7 +185,7 @@ export default function MonthlyFeeDetailPage() {
                   <Switch.Label>Activate</Switch.Label>
                 </Switch.Root>               
               ) : (
-                <Badge colorPalette={feeData.active ? "green" : "yellow"}>
+                <Badge size="md" colorPalette={feeData.active ? "green" : "yellow"}>
                   {feeData.active ? "Active" : "Inactive"}
                 </Badge>
               )}
@@ -227,36 +215,6 @@ export default function MonthlyFeeDetailPage() {
           </Box>
         </VStack>
       </Box>
-
-      {/* Statistics */}
-      <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
-        <Box bg="white" p={5} borderRadius="lg" boxShadow="md" borderLeft="4px solid" borderLeftColor="teal.500">
-          <Text fontSize="sm" color="gray.600" mb={1}>
-            Total Households
-          </Text>
-          <Text fontWeight="semibold" fontSize="2xl" color="teal.700">
-            {feeData.name}
-          </Text>
-        </Box>
-
-        <Box bg="white" p={5} borderRadius="lg" boxShadow="md" borderLeft="4px solid" borderLeftColor="cyan.500">
-          <Text fontSize="sm" color="gray.600" mb={1}>
-            Expected Revenue
-          </Text>
-          <Text fontWeight="semibold" fontSize="2xl" color="cyan.700">
-            ${10}
-          </Text>
-        </Box>
-
-        <Box bg="white" p={5} borderRadius="lg" boxShadow="md" borderLeft="4px solid" borderLeftColor="blue.500">
-          <Text fontSize="sm" color="gray.600" mb={1}>
-            Collection Rate
-          </Text>
-          <Text fontWeight="semibold" fontSize="2xl" color="blue.700">
-            {feeData.active ? "86%" : "98%"}
-          </Text>
-        </Box>
-      </SimpleGrid>
 
       <Button
         colorPalette="red"

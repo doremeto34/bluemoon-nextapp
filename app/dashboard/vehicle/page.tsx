@@ -1,12 +1,11 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Input, HStack, Button, Table, Badge } from "@chakra-ui/react";
+import { Box, Heading, Text, IconButton, Flex, Input, HStack, Button, Table, Badge } from "@chakra-ui/react";
 import { FiSearch, FiPlus, FiTrash2, FiEdit, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getVehiclesAction } from "@/lib/vehicle";
-import type { Household } from "@/types/households";
 
 
 export default function HouseholdPage() {
@@ -133,7 +132,7 @@ export default function HouseholdPage() {
         Showing {startIndex + 1}-{Math.min(endIndex, filteredVehicles.length)} of {filteredVehicles.length} vehicles
       </Text>
 
-      <Table.Root size="sm" variant="outline" borderRadius="lg">
+      <Table.Root size="sm" variant="outline" borderRadius="lg" overflow="hidden">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader w="8%">ID</Table.ColumnHeader>
@@ -149,7 +148,7 @@ export default function HouseholdPage() {
             <Table.Row key={vehicle.id}>
               <Table.Cell>{vehicle.id}</Table.Cell>
               <Table.Cell>{vehicle.name}</Table.Cell>
-              <Table.Cell>{vehicle.household_id}</Table.Cell>
+              <Table.Cell>{vehicle.room_number}</Table.Cell>
               <Table.Cell>{vehicle.type}</Table.Cell>
               <Table.Cell>
                 <Badge size="md" colorPalette={vehicle.active? "green" : "gray"}>
@@ -158,26 +157,24 @@ export default function HouseholdPage() {
               </Table.Cell>
               <Table.Cell>
                 <HStack gap={2}>
-                  <Button
+                  <IconButton
                     size="sm"
+                    rounded="full"
                     variant="outline"
                     colorPalette="black"
                     onClick={() => handleEditVehicle(vehicle.id)}
                   >
-                    <HStack gap={1}>
-                      <FiEdit />
-                    </HStack>
-                  </Button>
-                  <Button
+                    <FiEdit />
+                  </IconButton>
+                  <IconButton
                     size="sm"
+                    rounded="full"
                     variant="outline"
                     colorPalette="red"
                     onClick={() => handleRemoveVehicle(vehicle.id)}
                   >
-                    <HStack gap={1}>
-                      <FiTrash2 />
-                    </HStack>
-                  </Button>
+                    <FiTrash2 />
+                  </IconButton>
                 </HStack>
               </Table.Cell>
             </Table.Row>

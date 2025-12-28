@@ -1,10 +1,10 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, Field } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addOneTimeFeeTypeAction } from "@/lib/actions";
+import { addOneTimeFeeTypeAction } from "@/lib/fee";
 
 export default function OnetimeFeeCreatePage() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function OnetimeFeeCreatePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     addOneTimeFeeTypeAction({
       name: formData.name,
       amount: formData.amount,
@@ -49,75 +49,73 @@ export default function OnetimeFeeCreatePage() {
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
           <VStack align="stretch" gap={4}>
-            <Box>
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Fee Name <Text as="span" color="red.500">*</Text>
-              </Text>
-              <Input
-                placeholder="e.g., Elevator Maintenance"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                colorPalette={"teal"}
-                borderColor={"gray.300"}
-                _focus={{
-                  borderColor: "teal.500",
-                }}
-              />
-            </Box>
-
-            <Box>
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Amount
-              </Text>
-              <Input
-                type="number"
-                placeholder="e.g., 2500 (optional)"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-                colorPalette={"teal"}
-                borderColor={"gray.300"}
-                _focus={{
-                  borderColor: "teal.500",
-                }}
-              />
-              <Text fontSize="xs" color="gray.500" mt={1}>
-                Can be NULL if amount varies per household
-              </Text>
-            </Box>
-
-            <Box>
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Description
-              </Text>
-              <Input
-                placeholder="e.g., Annual maintenance and inspection of all elevators"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                colorPalette={"teal"}
-                borderColor={"gray.300"}
-                _focus={{
-                  borderColor: "teal.500",
-                }}
-              />
-            </Box>
-
-            <Box>
-              <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                Category
-              </Text>
-              <Input
-                placeholder="e.g., Donations, Repairs, Events"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                colorPalette={"teal"}
-                borderColor={"gray.300"}
-                _focus={{
-                  borderColor: "teal.500",
-                }}
-              />
-            </Box>
-
+            <Flex gap={4}>
+              <Field.Root required w="50%">
+                <Field.Label>
+                  Fee Name <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  placeholder="e.g., Elevator Maintenance"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
+                />
+              </Field.Root>
+              <Field.Root w="50%">
+                <Field.Label>
+                  Amount <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  type="number"
+                  placeholder="e.g., 2500 (optional)"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
+                />
+                <Field.HelperText>Can be NULL if amount varies per household</Field.HelperText>
+              </Field.Root>
+            </Flex>
+            <Flex gap={4}>
+              <Field.Root w="50%">
+                <Field.Label>
+                  Description <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  placeholder="e.g., Annual maintenance and inspection of all elevators"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
+                />
+              </Field.Root>
+              <Field.Root w="50%">
+                <Field.Label>
+                  Category <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  placeholder="e.g., Donations, Repairs, Events"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
+                />
+              </Field.Root>
+            </Flex>
           </VStack>
         </Box>
 

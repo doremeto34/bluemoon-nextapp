@@ -1,8 +1,8 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { getMonthlyUtilityReadingAction, createMonthlyUtilityReadingAction, updateMonthlyUtilityReadingAction } from "@/lib/utility";
-import { getHouseholdsAction } from "@/lib/actions";
-import { Box, Input, Text, VStack, Flex, HStack, Button, Table, Portal, createListCollection } from "@chakra-ui/react";
-import { FiCheckCircle, FiCircle, FiDollarSign, FiEdit, FiSave } from "react-icons/fi";
+import { getHouseholdsAction } from "@/lib/household";
+import { Box, Input, Text, VStack, Flex, HStack, Button, Table, IconButton, createListCollection } from "@chakra-ui/react";
+import { FiCheckCircle, FiCircle, FiX, FiEdit, FiSave } from "react-icons/fi";
 
 const monthCollection = createListCollection({
   items: [
@@ -82,11 +82,15 @@ const UtilityReadingList = forwardRef(function UtilityReadingList({
   const createRecords = async () => {
     const householdsData = await getHouseholdsAction();
     for (const household of householdsData) {
-      await createMonthlyUtilityReadingAction(
-        household.id,
-        month,
-        year,
-      );
+      try {
+        await createMonthlyUtilityReadingAction(
+          household.id,
+          month,
+          year,
+        );
+      } catch (error) {
+      console.warn(`Skipping household ${household.id}: record may already exist`,error);
+      }
     }
     const data = await getMonthlyUtilityReadingAction(month, year);
     setMonthlyRecords(data);
@@ -105,7 +109,7 @@ const UtilityReadingList = forwardRef(function UtilityReadingList({
 
   return (
     <VStack>
-      <Table.Root size="sm" variant="outline" rounded="lg">
+      <Table.Root size="sm" variant="outline" rounded="lg" overflow="hidden">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader w="8%">Room</Table.ColumnHeader>
@@ -118,11 +122,11 @@ const UtilityReadingList = forwardRef(function UtilityReadingList({
         </Table.Header>
         <Table.Body>
           {monthlyRecords.map((household) => (
-            <Table.Row key={household.id}>
-              <Table.Cell>{household.room}</Table.Cell>
-              <Table.Cell>{household.owner}</Table.Cell>
+            <Table.Row key={household.household_id}>
+              <Table.Cell>{household.room_number}</Table.Cell>
+              <Table.Cell>{household.owner == null? <Text color="teal">Owner havsn't been added yet</Text> : household.owner}</Table.Cell>
               <Table.Cell>
-                {editingId == household.id ?
+                {editingId == household.household_id ?
                   <Input
                     w="80%"
                     colorPalette={"teal"}
@@ -177,25 +181,25 @@ const UtilityReadingList = forwardRef(function UtilityReadingList({
               </Table.Cell>
               <Table.Cell>
                 <HStack gap={2}>
-                  <Button
+                  <IconButton
                     variant="outline"
+                    rounded="full"
                     colorPalette="black"
                     size="sm"
                     onClick={() => handleEditSave(household)}
                   >
-                    <HStack gap={1}>
-                      {editingId == household.id ? <FiSave /> : <FiEdit />}
-                    </HStack>
-                  </Button>
+                    {editingId == household.id ? <FiSave /> : <FiEdit />}
+                  </IconButton>
                   {editingId == household.id &&
-                    <Button
+                    <IconButton
                       variant="outline"
+                      rounded="full"
                       colorPalette="red"
                       size="sm"
                       onClick={() => handleCancel()}
                     >
-                      Cancel
-                    </Button>
+                      <FiX/>
+                    </IconButton>
                   }
                 </HStack>
               </Table.Cell>

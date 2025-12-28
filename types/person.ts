@@ -4,4 +4,5 @@ export type Person = {
   full_name: string;
   ngay_sinh: string;  // YYYY-MM-DD
   cccd: string;
+  room_number: number;
 };

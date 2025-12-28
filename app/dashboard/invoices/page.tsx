@@ -3,7 +3,7 @@
 import { Box, Heading, Text, VStack, Flex, HStack, Button, Select, Portal, createListCollection } from "@chakra-ui/react";
 import { FiCheckCircle, FiCircle, FiDollarSign } from "react-icons/fi";
 import { useState, useEffect } from "react";
-import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/actions";
+import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/fee";
 import { MonthlyFeeRecord } from "@/types/monthly_fee_record";
 import MonthlyInvoiceList from "@/components/MonthlyInvoicesList";
 import VehicleBillList from "@/components/VehicleInvoiceList";
@@ -66,13 +66,6 @@ export default function InvoicePage() {
     .reduce((sum, payment) => sum + payment.amount, 0);
   const unpaidAmount = totalAmount - paidAmount;
   const paidCount = filteredPayments.filter((payment) => payment.paid).length;
-
-  const handleTogglePaid = (paymentId: number, currentStatus: boolean) => {
-    updateMonthlyFeeRecordStatusAction(paymentId, !currentStatus);
-    getMonthlyFeeRecordsAction(selectedMonth, selectedYear).then((data) => {
-      setMonthlyRecords(data);
-    });
-  };
 
   return (
     <Box>

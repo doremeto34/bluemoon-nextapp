@@ -1,4 +1,4 @@
-import { Providers } from './providers'
+import { Provider } from "@/components/ui/provider"
 import { Inter } from 'next/font/google';
 
 const inter = Inter({
@@ -6,15 +6,12 @@ const inter = Inter({
   weight: ['400', '500', '600', '700'],
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout(props: { children: React.ReactNode }) {
+  const { children } = props
   return (
-    <html lang="en" className="inter">
+    <html suppressHydrationWarning className="inter">
       <body>
-        <Providers>{children}</Providers>
+        <Provider>{children}</Provider>
       </body>
     </html>
   )

@@ -49,9 +49,9 @@ export default function LoginPage() {
     <Box
       minH="100vh"
       bgGradient="to-br"
-      gradientFrom="teal.400"
-      gradientVia="cyan.500"
-      gradientTo="blue.500"
+      gradientFrom="#182233"
+      gradientVia="teal.600"
+      gradientTo="cyan.900"
       display="flex"
       alignItems="center"
       justifyContent="center"

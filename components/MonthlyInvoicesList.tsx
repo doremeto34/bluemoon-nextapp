@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getHouseholdsAction } from "@/lib/actions";
+import { getHouseholdsAction } from "@/lib/household";
 import { Box, Badge, Text, Accordion, IconButton, Flex, Stat, FormatNumber, HStack, Icon, Table, Span, createListCollection } from "@chakra-ui/react";
 import { FiCheck, FiX, FiCircle, FiCheckCircle, FiDollarSign } from "react-icons/fi";
 import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/fee";
@@ -180,7 +180,7 @@ export default function MonthlyInvoiceList({
                 <Accordion.ItemTrigger flex="93%">
                   <Accordion.ItemIndicator />
                   <Span w="35%">{household.room}</Span>
-                  <Span w="65%">{household.owner}</Span>
+                  <Span w="65%">{household.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : household.owner}</Span>
                 </Accordion.ItemTrigger>
                 <IconButton
                   size="sm"

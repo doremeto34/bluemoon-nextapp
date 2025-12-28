@@ -1,22 +1,43 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Select, Portal, Table, IconButton, Field, createListCollection } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave, FiDollarSign, FiTrash2, FiPlus } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getOneTimeFeeTypeByIdAction, updateOneTimeFeeTypeAction, addOneTimeFeeRecordAction, getOneTimeFeeRecordsByFeeIdAction, removeOneTimeFeeRecordAction } from "@/lib/actions";
+import { getOneTimeFeeTypeByIdAction, updateOneTimeFeeTypeAction, addOneTimeFeeRecordAction, getOneTimeFeeRecordsByFeeIdAction, removeOneTimeFeeRecordAction } from "@/lib/fee";
 import type { OneTimeFeeType } from "@/types/onetime_fee_type";
 import { OneTimeFeeRecord } from "@/types/onetime_fee_record";
-import { get } from "http";
+import { getRoomOptionsAction } from "@/lib/household"
+
+const monthCollection = createListCollection({
+  items: [
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
+  ],
+});
 
 export default function OnetimeFeeDetailPage() {
   const router = useRouter();
 
   const pathname = usePathname();
   const feeId = Number(pathname.split("/")[4]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [roomCollection, setRoomCollection] = useState(() =>
+    createListCollection<{ value: number; label: string }>({ items: [] })
+  );
   const [feeData, setFeeData] = useState<OneTimeFeeType | null>(null);
   const [formData, setFormData] = useState({
-    household_id: "",
+    household_id: 0,
     amount: 0,
     paid_at: "",
   });
@@ -26,6 +47,13 @@ export default function OnetimeFeeDetailPage() {
 
   useEffect(() => {
     async function fetchOneTimeFee() {
+      const rooms = await getRoomOptionsAction();
+
+      setRoomCollection(
+        createListCollection({
+          items: rooms
+        })
+      );
       const data = await getOneTimeFeeTypeByIdAction(feeId);
       setFeeData(data);
       setDefaultData(data);
@@ -61,7 +89,7 @@ export default function OnetimeFeeDetailPage() {
       paid_at: formData.paid_at,
     });
     setFormData({
-      household_id: "",
+      household_id: 0,
       amount: 0,
       paid_at: "",
     });
@@ -144,7 +172,7 @@ export default function OnetimeFeeDetailPage() {
               <Input
                 value={feeData.name}
                 onChange={(e) => setFeeData({ ...feeData, name: e.target.value })}
-                size="lg"
+                size="md"
                 fontWeight="semibold"
                 colorPalette={"teal"}
                 borderColor={"gray.300"}
@@ -170,7 +198,7 @@ export default function OnetimeFeeDetailPage() {
                   type="number"
                   value={feeData.amount}
                   onChange={(e) => setFeeData({ ...feeData, amount: Number(e.target.value) })}
-                  size="lg"
+                  size="md"
                   colorPalette={"teal"}
                   borderColor={"gray.300"}
                   _focus={{
@@ -178,7 +206,7 @@ export default function OnetimeFeeDetailPage() {
                   }}
                 />
               ) : (
-                <Text fontWeight="semibold" fontSize="2xl" color="cyan.700">
+                <Text fontWeight="semibold" fontSize="xl" color="cyan.700">
                   ${feeData.amount.toLocaleString()}
                 </Text>
               )}
@@ -193,7 +221,7 @@ export default function OnetimeFeeDetailPage() {
                   type="string"
                   value={feeData.category}
                   onChange={(e) => setFeeData({ ...feeData, category: e.target.value })}
-                  size="lg"
+                  size="md"
                   colorPalette={"teal"}
                   borderColor={"gray.300"}
                   _focus={{
@@ -203,8 +231,8 @@ export default function OnetimeFeeDetailPage() {
               ) : (
                 <Box
                   display="inline-block"
-                  px={3}
-                  py={2}
+                  px={2}
+                  py={1}
                   bg="blue.100"
                   color="blue.700"
                   borderRadius="md"
@@ -256,25 +284,49 @@ export default function OnetimeFeeDetailPage() {
           </Button>
         </Flex>
         <HStack gap={3}>
-          <Box flex="1">
-            <Text fontSize="sm" color="gray.600" mb={2}>
-              Household ID
-            </Text>
-            <Input
-              type="string"
-              value={formData.household_id}
-              onChange={(e) => setFormData({ ...formData, household_id: e.target.value })}
-              colorPalette={"teal"}
-              borderColor={"gray.300"}
-              _focus={{
-                borderColor: "teal.500",
+          <Field.Root required flex="1">
+            <Field.Label>
+              Household <Field.RequiredIndicator />
+            </Field.Label>
+            <Select.Root
+              collection={roomCollection}
+              size="md"
+              width="100%"
+              multiple={false}
+              open={isOpen}
+              onOpenChange={(e) => setIsOpen(e.open)}
+              onValueChange={(details) => {
+                setFormData({ ...formData, household_id: Number(details.value) });
               }}
-            />
-          </Box>
-          <Box flex="1">
-            <Text fontSize="sm" color="gray.600" mb={2}>
-              Amount
-            </Text>
+            >
+              <Select.HiddenSelect />
+              <Select.Control position="relative" borderColor="gray.300">
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Select room" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              {isOpen && <Portal>
+                <Select.Positioner pointerEvents="auto">
+                  <Select.Content w="100%">
+                    {roomCollection.items.map((item) => (
+                      <Select.Item item={item} key={item.value}>
+                        {item.label}
+                        <Select.ItemIndicator />
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Positioner>
+              </Portal>
+              }
+            </Select.Root>
+          </Field.Root>
+          <Field.Root required flex="1">
+            <Field.Label>
+              Amount <Field.RequiredIndicator />
+            </Field.Label>
             <Input
               type="number"
               value={formData.amount === 0 ? "" : formData.amount}
@@ -285,11 +337,11 @@ export default function OnetimeFeeDetailPage() {
                 borderColor: "teal.500",
               }}
             />
-          </Box>
-          <Box flex="1">
-            <Text fontSize="sm" color="gray.600" mb={2}>
-              Date
-            </Text>
+          </Field.Root>
+          <Field.Root required flex="1">
+            <Field.Label>
+              Date <Field.RequiredIndicator />
+            </Field.Label>
             <Input
               type="date"
               value={formData.paid_at}
@@ -300,62 +352,49 @@ export default function OnetimeFeeDetailPage() {
                 borderColor: "teal.500",
               }}
             />
-          </Box>
+          </Field.Root>
         </HStack>
       </Box>
 
       {/* Payment Records */}
-      <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mt={6}>
-        <Flex justify="space-between" align="center" mb={4}>
-          <Heading size="md" color="teal.700">Payment Records</Heading>
-        </Flex>
-
-        {records && records.length > 0 ? (
-          <VStack align="stretch" gap={3}>
-            {records.map((record: any) => (
-              <Box
-                key={record.id}
-                p={4}
-                bg="gray.50"
-                borderRadius="md"
-                borderLeft="4px solid"
-                borderLeftColor="cyan.500"
-              >
-                <Flex justify="space-between" align="start">
-                  <Box flex="1">
-                    <Text fontWeight="semibold" color="gray.700" mb={1}>
-                      Room {record.household_id}
-                    </Text>
-                    <Flex gap={4} fontSize="sm" color="gray.600">
-                      <Text>
-                        Amount: <Text as="span" fontWeight="medium" color="cyan.700">${record.amount_paid}</Text>
-                      </Text>
-                      <Text>
-                        Paid at: {new Date(record.paid_at).toLocaleString()}
-                      </Text>
-                    </Flex>
-                  </Box>
-                  <Button
+      {records && records.length > 0 ? (
+        <Table.Root mt={6} size="sm" variant="outline" boxShadow="md" borderRadius="lg" overflow="hidden">
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeader w="8%">Room</Table.ColumnHeader>
+              <Table.ColumnHeader w="28%">Owner</Table.ColumnHeader>
+              <Table.ColumnHeader w="29%">Period</Table.ColumnHeader>
+              <Table.ColumnHeader w="25%">Amount</Table.ColumnHeader>
+              <Table.ColumnHeader w="10%">Action</Table.ColumnHeader>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {records.map((record) => (
+              <Table.Row key={record.id}>
+                <Table.Cell>{record.room_number}</Table.Cell>
+                <Table.Cell>{record.owner}</Table.Cell>
+                <Table.Cell>{new Date(record.paid_at).toLocaleString()}</Table.Cell>
+                <Table.Cell fontWeight="semibold">{record.amount_paid.toLocaleString() + "₫"}</Table.Cell>
+                <Table.Cell>
+                  <IconButton
                     size="sm"
+                    rounded="full"
                     variant="outline"
                     colorPalette="red"
                     onClick={() => handleRemovePayment(record.id)}
                   >
-                    <HStack gap={1}>
-                      <FiTrash2 />
-                      <Text>Remove</Text>
-                    </HStack>
-                  </Button>
-                </Flex>
-              </Box>
+                    <FiTrash2 />
+                  </IconButton>
+                </Table.Cell>
+              </Table.Row>
             ))}
-          </VStack>
-        ) : (
-          <Box p={8} textAlign="center" bg="gray.50" borderRadius="md">
-            <Text color="gray.500">No payment records yet.</Text>
-          </Box>
-        )}
-      </Box>
+          </Table.Body>
+        </Table.Root>
+      ) : (
+        <Box p={8} textAlign="center" bg="gray.50" borderRadius="md">
+          <Text color="gray.500">No payment records yet.</Text>
+        </Box>
+      )}
 
       {/* Delete Button */}
       <Button

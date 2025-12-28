@@ -1,27 +1,36 @@
 'use client';
 
-import { Box, Heading, Text, Input, Pagination, ButtonGroup, Flex, HStack, Button, IconButton, Table } from "@chakra-ui/react";
-import { FiSearch, FiChevronLeft, FiChevronRight, FiInfo, FiTrash2, FiPlus, FiEdit, FiArrowLeft } from "react-icons/fi";
+import { Box, Heading, Text, IconButton, Table, Pagination, Flex, Button, Input, HStack, ButtonGroup } from "@chakra-ui/react";
+import {
+  FiPlus,
+  FiSearch,
+  FiTrash2,
+  FiInfo,
+  FiChevronLeft,
+  FiChevronRight,
+  FiArrowLeft,
+} from "react-icons/fi";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { getFullHouseholdsAction } from "@/lib/household";
+import { useRouter, usePathname } from "next/navigation";
+import { getHouseholdsByRoomId } from "@/lib/household";
 
 const ITEMS_PER_PAGE = 10;
 
-export default function DemographyPage() {
+export default function FeePage() {
   const router = useRouter();
 
+  const pathname = usePathname();
+  const roomId = Number(pathname.split("/")[3]);
   const [households, setHouseholds] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getFullHouseholdsAction();
+    async function load() {
+      const data = await getHouseholdsByRoomId(roomId);
       setHouseholds(data);
-    };
-
-    fetchData();
+    }
+    load();
   }, []);
 
   const filteredHousehold = households.filter((h) => {
@@ -29,7 +38,7 @@ export default function DemographyPage() {
       (h.owner!=null && h.owner.toLowerCase().includes(searchTerm.toLowerCase())) ||
       h.room.includes(searchTerm) ||
       h.movein_date.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (h.moveout_date!=null && h.moveout_date.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (h.moveout_date != null && h.moveout_date.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
       h.id.toString().includes(searchTerm);
     return matchesSearch;
   });
@@ -39,37 +48,23 @@ export default function DemographyPage() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentHouseholds = filteredHousehold.slice(startIndex, endIndex);
 
-  const handleEditPerson = (personId: number) => {
-    router.push(`/dashboard/demography/${personId}/edit`);
-  };
-
   return (
     <Box>
-      <Flex justify="space-between" align="center" mb={4}>
-        <Box>
-          <Heading color="teal.700" fontSize="2xl" fontWeight="normal">Household</Heading>
-        </Box>
-        <HStack>
-        <Button
-          colorPalette="teal"
-          bgGradient="to-r"
-          gradientFrom="teal.500"
-          gradientTo="cyan.500"
-          color="white"
-          _hover={{
-            transform: 'translateY(-2px)',
-            boxShadow: 'lg',
-          }}
-          onClick={() => router.push('/dashboard/household/create')}
-        >
-          <HStack gap={2}>
-            <FiPlus />
-            <Text>Add Household</Text>
-          </HStack>
-        </Button>
+      <Button
+        variant="ghost"
+        colorPalette="teal"
+        mb={4}
+        onClick={() => router.push('/dashboard/room')}
+      >
+        <HStack gap={2}>
+          <FiArrowLeft />
+          <Text>Back</Text>
         </HStack>
-      </Flex>
-
+      </Button>
+      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">
+        Room {roomId}
+      </Heading>
+        
       {/* Search and Filter */}
       <Box bg="white" p={4} borderRadius="lg" boxShadow="md" mb={6}>
         <Flex gap={4} direction={{ base: "column", md: "row" }}>
@@ -123,7 +118,7 @@ export default function DemographyPage() {
             <Table.Row key={h.id}>
               <Table.Cell>{h.id}</Table.Cell>
               <Table.Cell>{h.room}</Table.Cell>
-              <Table.Cell>{h.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : h.owner}</Table.Cell>
+              <Table.Cell>{h.owner == null? <Text color="teal">Owner havsn't been added yet</Text> : h.owner}</Table.Cell>
               <Table.Cell>
                 <Text>
                   {new Date(h.movein_date).toLocaleDateString('en-US', {
@@ -170,6 +165,7 @@ export default function DemographyPage() {
           ))}
         </Table.Body>
       </Table.Root>
+
       {currentHouseholds.length === 0 && (
         <Box bg="white" p={8} borderRadius="lg" boxShadow="md" textAlign="center">
           <Text color="gray.500">No households found matching your search.</Text>
@@ -205,7 +201,6 @@ export default function DemographyPage() {
           </Pagination.NextTrigger>
         </ButtonGroup>
       </Pagination.Root>
-
     </Box>
   );
 }

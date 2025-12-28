@@ -28,13 +28,14 @@ export async function getMonthlyUtilityReadingAction(month: number, year: number
         r.electricity_usage,
         r.water_usage,
         r.internet_fee,
-        h.id AS room,
+        rm.number AS room_number,
         p.full_name AS owner
       FROM utility_reading r
       JOIN households h ON r.household_id = h.id
-      JOIN persons p ON h.owner_id = p.id
+      JOIN room rm ON h.room = rm.id
+      LEFT JOIN persons p ON h.owner_id = p.id
       WHERE r.month = ${month} AND r.year = ${year}
-      ORDER BY h.id ASC;
+      ORDER BY rm.number ASC;
     `;
     return result.rows;
   } catch (err) {
@@ -110,19 +111,25 @@ export async function getMonthlyUtilityRecordsAction(
         ufr.type,
         ufr.amount,
         ufr.status,
-        h.area,
-        h.floor,
+
+        rm.id AS room_id,
+        rm.number AS room_number,
+        rm.area,
+        rm.floor,
+
         p.full_name AS owner
       FROM utility_fee_records ufr
       JOIN households h
         ON ufr.household_id = h.id
+      JOIN room rm
+        ON h.room = rm.id
       JOIN persons p
         ON h.owner_id = p.id
       WHERE ufr.month = ${month}
         AND ufr.year = ${year}
         AND ufr.type = ${type}
-      ORDER BY h.floor, h.id;
-    `;
+      ORDER BY rm.number;
+    `;    
     return result.rows;
   } catch (error) {
     console.error('Error fetching monthly utility records:', error);

@@ -4,8 +4,6 @@ import { Box, Heading, Text, VStack, Flex, HStack, Button, Select, Portal, creat
 import { FiPlus } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/actions";
-import { MonthlyFeeRecord } from "@/types/monthly_fee_record";
 import UtilityReadingList from "@/components/UtilityReadingList";
 
 const YEARS = [2025, 2026, 2027];
@@ -34,36 +32,8 @@ export default function BillPage() {
   const currentDate = new Date();
   const childRef = useRef<any>(null);
   const router = useRouter();
-  const [monthlyRecords, setMonthlyRecords] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
-
-  useEffect(() => {
-      const fetchData = async () => {
-        const data = await getMonthlyFeeRecordsAction(selectedMonth, selectedYear);
-        setMonthlyRecords(data);
-      };
-  
-      fetchData();
-    }, [selectedMonth, selectedYear]);
-
-  const filteredPayments = monthlyRecords.filter(
-    (payment) => payment.month === selectedMonth && payment.year === selectedYear
-  );
-
-  const totalAmount = filteredPayments.reduce((sum, payment) => sum + payment.amount, 0);
-  const paidAmount = filteredPayments
-    .filter((payment) => payment.paid)
-    .reduce((sum, payment) => sum + payment.amount, 0);
-  const unpaidAmount = totalAmount - paidAmount;
-  const paidCount = filteredPayments.filter((payment) => payment.paid).length;
-
-  const handleTogglePaid = (paymentId: number, currentStatus: boolean) => {
-    updateMonthlyFeeRecordStatusAction(paymentId, !currentStatus);
-    getMonthlyFeeRecordsAction(selectedMonth, selectedYear).then((data) => {
-      setMonthlyRecords(data);
-    });
-  };
 
   return (
     <Box>

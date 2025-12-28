@@ -49,7 +49,7 @@ export default function UsersTable() {
   }
 
   return (
-    <Table.Root size="sm" variant="outline" rounded="lg">
+    <Table.Root size="sm" variant="outline" rounded="lg" overflow="hidden">
       <Table.Header>
         <Table.Row>
           <Table.ColumnHeader w="10%">ID</Table.ColumnHeader>

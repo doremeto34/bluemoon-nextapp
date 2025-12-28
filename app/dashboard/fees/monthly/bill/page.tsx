@@ -4,7 +4,7 @@ import { Box, Heading, Text, Table, Flex, Button, HStack, Input, Badge, Select, 
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getHouseholdsAction } from "@/lib/actions";
+import { getHouseholdsAction } from "@/lib/household";
 import { getMonthlyFeeAction, addMonthlyFeeRecordsAction } from "@/lib/fee";
 
 const YEARS = [2025, 2026, 2027];
@@ -34,6 +34,8 @@ export default function MonthlyFeeCreatePage() {
 
   const currentDate = new Date();
   let feeData: any;
+  const [isOpenMonth, setIsOpenMonth] = useState(false);
+  const [isOpenYear, setIsOpenYear] = useState(false);
   const [households, setHouseholds] = useState<any[]>([]);
   const [monthlyFees, setMonthlyFees] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
@@ -106,6 +108,8 @@ export default function MonthlyFeeCreatePage() {
               size="sm"
               width="50%"
               multiple={false}
+              open={isOpenMonth}
+              onOpenChange={(e) => setIsOpenMonth(e.open)}
               defaultValue={[(currentDate.getMonth() + 1).toString()]}
               onValueChange={(details) => {
                 setSelectedMonth(Number(details.value));
@@ -121,7 +125,7 @@ export default function MonthlyFeeCreatePage() {
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
+              {isOpenMonth && <Portal>
                 <Select.Positioner>
                   <Select.Content>
                     {monthCollection.items.map((month) => (
@@ -133,6 +137,7 @@ export default function MonthlyFeeCreatePage() {
                   </Select.Content>
                 </Select.Positioner>
               </Portal>
+              }
             </Select.Root>
 
             <Select.Root
@@ -140,6 +145,8 @@ export default function MonthlyFeeCreatePage() {
               size="sm"
               width="50%"
               multiple={false}
+              open={isOpenYear}
+              onOpenChange={(e) => setIsOpenYear(e.open)}
               defaultValue={[currentDate.getFullYear().toString()]}
               onValueChange={(details) => {
                 setSelectedYear(Number(details.value));
@@ -155,7 +162,7 @@ export default function MonthlyFeeCreatePage() {
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
+              {isOpenYear && <Portal>
                 <Select.Positioner>
                   <Select.Content>
                     {yearCollection.items.map((year) => (
@@ -167,9 +174,10 @@ export default function MonthlyFeeCreatePage() {
                   </Select.Content>
                 </Select.Positioner>
               </Portal>
+              }
             </Select.Root>
           </Flex>
-          <Table.Root size="sm" variant="outline" rounded="lg" mt={6}>
+          <Table.Root size="sm" variant="outline" rounded="lg" mt={6} overflow="hidden">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader w="7%">
@@ -250,7 +258,7 @@ export default function MonthlyFeeCreatePage() {
             Select Households
           </Text>
 
-          <Table.Root size="sm" variant="outline" rounded="lg" mt={6}>
+          <Table.Root size="sm" variant="outline" rounded="lg" mt={6} overflow="hidden">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader w="7%">
@@ -260,7 +268,7 @@ export default function MonthlyFeeCreatePage() {
                     checked={selectedHouseholds.length === households.length}
                     onCheckedChange={(value) => {
                       if (value.checked) {
-                        setSelectedHouseholds(households.map((h) => h.id));
+                        setSelectedHouseholds(households.map((h) => h.household_id));
                       } else {
                         setSelectedHouseholds([]);
                       }
@@ -276,19 +284,19 @@ export default function MonthlyFeeCreatePage() {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {households.map((household) => (
-                <Table.Row key={household.id}>
+              {households.map((h) => (
+                <Table.Row key={h.id}>
                   <Table.Cell>
                     <Checkbox.Root
                       colorPalette="teal"
                       size="sm"
-                      checked={selectedHouseholds.includes(household.id)}
+                      checked={selectedHouseholds.includes(h.household_id)}
                       onCheckedChange={(value) => {
                         if (value.checked) {
-                          setSelectedHouseholds((prev) => [...prev, household.id]);
+                          setSelectedHouseholds((prev) => [...prev, h.household_id]);
                         } else {
                           setSelectedHouseholds((prev) =>
-                            prev.filter((id) => id !== household.id)
+                            prev.filter((id) => id !== h.household_id)
                           )
                         }
                       }}
@@ -297,14 +305,14 @@ export default function MonthlyFeeCreatePage() {
                       <Checkbox.HiddenInput />
                     </Checkbox.Root>
                   </Table.Cell>
-                  <Table.Cell>{household.room}</Table.Cell>
-                  <Table.Cell>{household.owner}</Table.Cell>
-                  <Table.Cell>{household.area} m²</Table.Cell>
+                  <Table.Cell>{h.room}</Table.Cell>
+                  <Table.Cell>{h.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : h.owner}</Table.Cell>
+                  <Table.Cell>{h.area} m²</Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
           </Table.Root>
-       </Box>
+        </Box>
 
         {/* Action Buttons */}
         <Flex gap={3} mt="8">

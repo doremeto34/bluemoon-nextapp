@@ -10,6 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { MdApartment, MdOutlineAccountCircle } from "react-icons/md";
 import { IoCarSport } from "react-icons/io5";
 import { FcElectricity } from "react-icons/fc";
+import { GoPeople } from "react-icons/go";
 
 type NavItem = {
   label: string;
@@ -19,7 +20,8 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/dashboard", icon: HiHome },
-  { label: "Household", href: "/dashboard/household", icon: MdApartment },
+  { label: "Room", href: "/dashboard/room", icon: MdApartment },
+  { label: "Household", href: "/dashboard/household", icon: GoPeople },
   { label: "Demography", href: "/dashboard/demography", icon: MdOutlineAccountCircle },
   { label: "Fees", href: "/dashboard/fees", icon: FiDollarSign },
   { label: "Invoices", href: "/dashboard/invoices", icon: FiFileText },

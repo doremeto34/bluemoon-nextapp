@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Field } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,7 @@ export default function HouseholdCreatePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/room')}
       >
@@ -40,17 +41,18 @@ export default function HouseholdCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create New Room</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Create New Room</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
           <VStack align="stretch" gap={4}>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Room Number <Text as="span" color="red.500">*</Text>
-                </Text>
+              <Field.Root required>
+                <Field.Label>
+                  Room Number
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   placeholder="e.g., 101"
                   value={formData.room_number}
@@ -62,12 +64,12 @@ export default function HouseholdCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-              </Box>
-
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Area (m²) <Text as="span" color="red.500">*</Text>
-                </Text>
+              </Field.Root>
+              <Field.Root required>
+                <Field.Label>
+                  Area (m²)
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -81,12 +83,12 @@ export default function HouseholdCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-              </Box>
-
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Floor <Text as="span" color="red.500">*</Text>
-                </Text>
+              </Field.Root>
+              <Field.Root required>
+                <Field.Label>
+                  Floor
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   placeholder="e.g., 1st Floor"
                   value={formData.floor}
@@ -98,7 +100,7 @@ export default function HouseholdCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-              </Box>
+              </Field.Root>             
 
             </SimpleGrid>
           </VStack>

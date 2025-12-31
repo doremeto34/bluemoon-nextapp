@@ -1,78 +1,97 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Field, RadioGroup } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, Field, SimpleGrid, RadioGroup, Portal, createListCollection } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { updatePersonAction, getPersonByIdAction } from "@/lib/demography";
-import type { Person } from "@/types/person";
-import { usePathname } from "next/navigation";
+import { createAbsenceRecordAction } from "@/lib/demography";
+import { getRoomOptionsAction } from "@/lib/household"
+import { Toaster, toaster } from "@/components/ui/toaster"
 
-const statusList = [
-  { label: "Residing", value: "residing" },
+const typeList = [
   { label: "Temporary", value: "temporary" },
   { label: "Absent", value: "absent" },
 ]
 
-export default function DemographyEditPage() {
-  const router = useRouter();
+interface FormData {
+  person_id: number;
+  type: string;
+  reason: string;
+  start_date: string;
+  end_date: string;
+}
 
-  const pathname = usePathname();
-  const personId = Number(pathname.split("/")[3]); 
-  const [formData, setFormData] = useState<Person | null>(null);
+export default function DemographyCreatePage() {
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    person_id: 0,
+    type: "temporary",
+    reason: "",
+    start_date: "",
+    end_date: "",
+  });
+  const [roomCollection, setRoomCollection] = useState(() =>
+    createListCollection<{ value: number; label: string }>({ items: [] })
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getPersonByIdAction(personId);
-      if (data) {
-        setFormData(data);
-      }
-    };
+    async function loadRooms() {
+      const rooms = await getRoomOptionsAction();
 
-    fetchData();
-  }, [personId]);
-
-  if (!formData) return <div>Loading...</div>;
+      setRoomCollection(
+        createListCollection({
+          items: rooms
+        })
+      );
+    }
+    loadRooms();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await updatePersonAction(personId, {
-      full_name: formData.full_name,
-      ngay_sinh: formData.ngay_sinh,
-      cccd: formData.cccd,
-      household_id: formData.household_id,
-      status: formData.status,
+    const result = await createAbsenceRecordAction(
+      formData.person_id,
+      formData.type,
+      formData.reason,
+      formData.start_date,
+      formData.end_date
+    );
+
+    if (result?.error) {
+      toaster.create({
+        title: "Cannot create record",
+        description: result.error,
+        type: "error",
+      });
+      return;
+    }
+    toaster.create({
+      description: "Record created",
+      type: "success",
     });
-
-    router.push("/dashboard/demography");
+    router.push('/dashboard/demography/absence');
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-  
   return (
     <Box>
+      <Toaster/>
       {/* Back Button */}
       <Button
         variant="ghost"
         colorPalette="teal"
         mt={6}
         mb={4}
-        onClick={() => router.push('/dashboard/demography')}
+        onClick={() => router.push('/dashboard/demography/absence')}
       >
         <HStack gap={2}>
           <FiArrowLeft />
-          <Text>Back to Demography</Text>
+          <Text>Back to Absence</Text>
         </HStack>
       </Button>
 
-      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Edit Person - {formData.full_name}</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Add New Record</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>
@@ -81,13 +100,30 @@ export default function DemographyEditPage() {
             <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
               <Field.Root required>
                 <Field.Label>
-                  Full Name
+                  Resident ID
                   <Field.RequiredIndicator />
                 </Field.Label>
                 <Input
                   placeholder="e.g., John Smith"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                  value={formData.person_id}
+                  onChange={(e) => setFormData({ ...formData, person_id: Number(e.target.value) })}
+                  required
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
+                />
+              </Field.Root>
+              <Field.Root>
+                <Field.Label>
+                  Reason
+                  <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  placeholder="e.g., John Smith"
+                  value={formData.reason}
+                  onChange={(e) => setFormData({ ...formData, reason: e.target.value})}
                   required
                   colorPalette={"teal"}
                   borderColor={"gray.300"}
@@ -98,13 +134,31 @@ export default function DemographyEditPage() {
               </Field.Root>
               <Field.Root required>
                 <Field.Label>
-                  Date of Birth
+                  Start Date
                   <Field.RequiredIndicator />
                 </Field.Label>
                 <Input
                   type="date"
-                  value={formatDate(formData.ngay_sinh)}
-                  onChange={(e) => setFormData({ ...formData, ngay_sinh: e.target.value })}
+                  value={formData.start_date}
+                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                  required
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
+                />
+              </Field.Root>
+
+              <Field.Root >
+                <Field.Label>
+                  End Date
+                  <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  type="date"
+                  value={formData.end_date}
+                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                   required
                   colorPalette={"teal"}
                   borderColor={"gray.300"}
@@ -115,45 +169,11 @@ export default function DemographyEditPage() {
               </Field.Root>
               <Field.Root>
                 <Field.Label>
-                  CCCD
+                  Type
                 </Field.Label>
-                <Input
-                  placeholder="e.g., 001082012345"
-                  value={formData.cccd}
-                  onChange={(e) => setFormData({ ...formData, cccd: e.target.value })}
-                  maxLength={12}
-                  colorPalette={"teal"}
-                  borderColor={"gray.300"}
-                  _focus={{
-                    borderColor: "teal.500",
-                  }}
-                />
-                <Field.HelperText>12-digit identification number</Field.HelperText>
-              </Field.Root>
-              <Field.Root>
-                <Field.Label>
-                  Household ID
-                </Field.Label>
-                <Input
-                  type="number"
-                  placeholder="e.g., 101 (optional)"
-                  value={formData.household_id || ""}
-                  onChange={(e) => setFormData({ ...formData, household_id: e.target.value ? parseInt(e.target.value) : null })}
-                  colorPalette={"teal"}
-                  borderColor={"gray.300"}
-                  _focus={{
-                    borderColor: "teal.500",
-                  }}
-                />
-                <Field.HelperText>Leave empty if not assigned to a household</Field.HelperText>
-              </Field.Root>
-              <Field.Root>
-                <Field.Label>
-                  Status
-                </Field.Label>
-                <RadioGroup.Root colorPalette="teal" value={formData.status} onValueChange={(e)=>setFormData({ ...formData, status: e.value? e.value:""})}>
+                <RadioGroup.Root colorPalette="teal" value={formData.type} onValueChange={(e) => setFormData({ ...formData, type: e.value ? e.value : "" })}>
                   <HStack gap="6">
-                    {statusList.map((item) => (
+                    {typeList.map((item) => (
                       <RadioGroup.Item key={item.value} value={item.value}>
                         <RadioGroup.ItemHiddenInput />
                         <RadioGroup.ItemIndicator />
@@ -172,7 +192,7 @@ export default function DemographyEditPage() {
           <Button
             variant="outline"
             colorPalette="gray"
-            onClick={() => router.push('/dashboard/demography')}
+            onClick={() => router.push('/dashboard/demography/absence')}
           >
             Cancel
           </Button>
@@ -186,7 +206,7 @@ export default function DemographyEditPage() {
           >
             <HStack gap={2}>
               <FiSave />
-              <Text>Save Changes</Text>
+              <Text>Add Record</Text>
             </HStack>
           </Button>
         </Flex>

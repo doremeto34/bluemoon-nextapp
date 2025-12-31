@@ -65,6 +65,7 @@ export default function VehicleEditPage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/demography')}
       >
@@ -74,10 +75,7 @@ export default function VehicleEditPage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700">Edit Vehicle - {formData.name}</Heading>
-      <Text color="gray.600" mb={6}>
-        Update vehicle information
-      </Text>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Edit Vehicle - {formData.name}</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

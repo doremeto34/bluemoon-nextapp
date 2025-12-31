@@ -3,7 +3,7 @@ import { Chart, useChart } from "@chakra-ui/charts"
 import { Card, Select, Portal, HStack, createListCollection } from "@chakra-ui/react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts"
 import { useEffect, useState } from "react";
-import { getLast12MonthsVehicleRevenueAction } from "@/lib/serverUtils";
+import { getLast12MonthsUtilityRevenueAction } from "@/lib/serverUtils";
 
 const typeCollection = createListCollection({
   items: [
@@ -32,9 +32,9 @@ function getLast12MonthsSkeleton() {
 
   return result;
 }
-export async function getRevenueChartData() {
+export async function getRevenueChartData(selectedType: string) {
   const skeleton = getLast12MonthsSkeleton();
-  const rows = await getLast12MonthsVehicleRevenueAction();
+  const rows = await getLast12MonthsUtilityRevenueAction(selectedType);
 
   const map = new Map(
     rows.map(r => [`${r.year}-${r.month}`, Number(r.total)])
@@ -49,8 +49,8 @@ export default function UtilityReceiveChart() {
   const [data, setData] = useState<RevenueData[] | null>(null);
   const [selectedType, setSelectedType] = useState("Electric");
   useEffect(() => {
-    getRevenueChartData().then(setData);
-  }, []);
+    getRevenueChartData(selectedType).then(setData);
+  }, [selectedType]);
 
   // Always call useChart, even if data isn't loaded yet
   const chart = useChart({

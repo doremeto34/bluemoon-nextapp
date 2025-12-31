@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, IconButton, Flex, Input, HStack, Button, Table, Badge } from "@chakra-ui/react";
+import { Box, Heading, Text, IconButton, Flex, Input, HStack, Button, Table, Badge, Dialog, CloseButton, Portal } from "@chakra-ui/react";
 import { FiSearch, FiPlus, FiTrash2, FiEdit, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
 import { useState, useEffect } from "react";
@@ -13,6 +13,7 @@ export default function HouseholdPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDelete, setSelectedDelete] = useState<number>();
 
   useEffect(() => {
     async function load() {
@@ -52,9 +53,9 @@ export default function HouseholdPage() {
 
   return (
     <Box>
-      <Flex justify="space-between" align="center" mb={4}>
+      <Flex justify="space-between" align="center" mt={10} mb={6}>
         <Box>
-          <Heading color="teal.700" fontSize="2xl" fontWeight="normal">Vehicle Management</Heading>
+          <Heading color="#212636" fontSize="3xl" fontWeight="medium">Vehicle Management</Heading>
         </Box>
         <HStack gap={4}>
           <Button
@@ -151,7 +152,7 @@ export default function HouseholdPage() {
               <Table.Cell>{vehicle.room_number}</Table.Cell>
               <Table.Cell>{vehicle.type}</Table.Cell>
               <Table.Cell>
-                <Badge size="md" colorPalette={vehicle.active? "green" : "gray"}>
+                <Badge size="md" colorPalette={vehicle.active ? "green" : "gray"}>
                   {vehicle.active ? "Active" : "Inactive"}
                 </Badge>
               </Table.Cell>
@@ -166,15 +167,45 @@ export default function HouseholdPage() {
                   >
                     <FiEdit />
                   </IconButton>
-                  <IconButton
-                    size="sm"
-                    rounded="full"
-                    variant="outline"
-                    colorPalette="red"
-                    onClick={() => handleRemoveVehicle(vehicle.id)}
+                  <Dialog.Root
+                    role="alertdialog"
+                    open={vehicle.id === selectedDelete}
+                    onOpenChange={(e) => { setSelectedDelete(e.open ? vehicle.id : -1); }}
                   >
-                    <FiTrash2 />
-                  </IconButton>
+                    <Dialog.Trigger asChild>
+                      <IconButton
+                        rounded="full"
+                        size="sm"
+                        variant="outline"
+                        colorPalette="red"
+                      >
+                        <FiTrash2 />
+                      </IconButton>
+                    </Dialog.Trigger>
+                    {vehicle.id == selectedDelete && <Portal>
+                      <Dialog.Backdrop />
+                      <Dialog.Positioner>
+                        <Dialog.Content>
+                          <Dialog.Header>
+                            <Dialog.Title>Are you sure?</Dialog.Title>
+                          </Dialog.Header>
+                          <Dialog.Body>
+                            This action cannot be undone. This will permanently delete and remove  data from our systems.
+                          </Dialog.Body>
+                          <Dialog.Footer>
+                            <Dialog.ActionTrigger asChild>
+                              <Button variant="outline" onClick={() => setSelectedDelete(-1)}>Cancel</Button>
+                            </Dialog.ActionTrigger>
+                            <Button colorPalette="red" onClick={() => handleRemoveVehicle(vehicle.id)}>Delete</Button>
+                          </Dialog.Footer>
+                          <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                          </Dialog.CloseTrigger>
+                        </Dialog.Content>
+                      </Dialog.Positioner>
+                    </Portal>}
+                  </Dialog.Root>
+
                 </HStack>
               </Table.Cell>
             </Table.Row>

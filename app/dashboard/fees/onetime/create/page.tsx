@@ -34,6 +34,7 @@ export default function OnetimeFeeCreatePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/fees')}
       >
@@ -43,7 +44,7 @@ export default function OnetimeFeeCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create One-Time Fee Type</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Create One-Time Fee Type</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

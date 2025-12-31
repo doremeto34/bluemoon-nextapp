@@ -53,6 +53,7 @@ export default function FeePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/room')}
       >
@@ -61,7 +62,7 @@ export default function FeePage() {
           <Text>Back</Text>
         </HStack>
       </Button>
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">
         Room {roomId}
       </Heading>
         

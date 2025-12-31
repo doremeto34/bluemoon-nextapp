@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { getHouseholdsAction } from "@/lib/household";
-import { Box, Badge, Text, Accordion, IconButton, Flex, Stat, FormatNumber, HStack, Icon, Table, Span, createListCollection } from "@chakra-ui/react";
-import { FiCheck, FiX, FiCircle, FiCheckCircle, FiDollarSign } from "react-icons/fi";
+import { Box, Badge, Text, Accordion, IconButton, Flex, Stat, FormatNumber, HStack, Icon, Button, Table, Span, Dialog, CloseButton, Portal, createListCollection } from "@chakra-ui/react";
+import { FiCheck, FiX, FiTrash2, FiCheckCircle, FiDollarSign } from "react-icons/fi";
 import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/fee";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 const monthCollection = createListCollection({
   items: [
@@ -23,15 +24,17 @@ const monthCollection = createListCollection({
 
 export default function MonthlyInvoiceList({
   month,
-  year
+  year,
+  status,
 }: {
   month: number;
-  year: number
+  year: number;
+  status: string;
 }) {
 
   const [monthlyRecords, setMonthlyRecords] = useState<any[]>([]);
   const [households, setHouseholds] = useState<any[]>([]);
-
+  const [selectedDelete, setSelectedDelete] = useState<number>();
   useEffect(() => {
     const fetchData = async () => {
       const data = await getMonthlyFeeRecordsAction(month, year);
@@ -118,6 +121,27 @@ export default function MonthlyInvoiceList({
       );
     }
   };
+  //Remove invoice
+  const handleRemoveInvoice = async (invoiceId: number) => {
+    /*
+    const result = await deletePersonAction(personId);
+    if (result?.error) {
+      toaster.create({
+        title: "Cannot delete invoice",
+        description: result.error,
+        type: "error",
+      });
+      setSelectedDelete(-1);
+      return;
+    }
+    */
+    setMonthlyRecords(prev => prev.filter(i => i.id !== invoiceId));
+    toaster.create({
+      description: "Invoice deleted",
+      type: "success",
+    });
+    setSelectedDelete(-1);
+  };
 
   const totalAmount = monthlyRecords.reduce((sum, payment) => sum + payment.amount, 0);
   const paidAmount = monthlyRecords
@@ -128,6 +152,7 @@ export default function MonthlyInvoiceList({
 
   return (
     <Box width="100%">
+      <Toaster/>
       {/* Statistics */}
       <Flex gap={4} mb={6} direction={{ base: "column", md: "row" }}>
         <Stat.Root flex={1} borderWidth="thin" p="4" rounded="lg" shadow="md">
@@ -179,8 +204,13 @@ export default function MonthlyInvoiceList({
               <Flex>
                 <Accordion.ItemTrigger flex="93%">
                   <Accordion.ItemIndicator />
-                  <Span w="35%">{household.room}</Span>
-                  <Span w="65%">{household.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : household.owner}</Span>
+                  <Span w="15%">{household.room}</Span>
+                  <Span w="42%">{household.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : household.owner}</Span>
+                  <Span w="48%">
+                    {monthlyRecords
+                      .filter(record => record.household_id === household.id)
+                      .reduce((sum, invoice) => sum + invoice.amount, 0)}
+                  </Span>
                 </Accordion.ItemTrigger>
                 <IconButton
                   size="sm"
@@ -205,7 +235,7 @@ export default function MonthlyInvoiceList({
               <Accordion.ItemContent>
                 <Accordion.ItemBody>
                   {monthlyRecords.filter(
-                    (record) => record.household_id === household.id
+                    (record) => record.household_id === household.id && (status==="All" || record.status===status.toLowerCase())
                   ).length === 0 ?
                     <Text color="gray.500" fontSize="sm">
                       No invoices
@@ -242,11 +272,51 @@ export default function MonthlyInvoiceList({
                               </Table.Cell>
                               <Table.Cell>
                                 <IconButton size="sm" rounded="full" variant="outline"
+                                  mr={2}
                                   colorPalette={invoice.status === "paid" ? "red" : "green"}
                                   onClick={() => handleTogglePaid(invoice.id, invoice.status)}
                                 >
                                   {invoice.status === "paid" ? <FiX /> : <FiCheck />}
                                 </IconButton>
+                                {/* This is the delete dialog*/}
+                                <Dialog.Root
+                                  role="alertdialog"
+                                  open={invoice.id === selectedDelete}
+                                  onOpenChange={(e) => { setSelectedDelete(e.open ? invoice.id : -1); }}
+                                >
+                                  <Dialog.Trigger asChild>
+                                    <IconButton
+                                      rounded="full"
+                                      size="sm"
+                                      variant="outline"
+                                      colorPalette="red"
+                                    >
+                                      <FiTrash2 />
+                                    </IconButton>
+                                  </Dialog.Trigger>
+                                  {invoice.id == selectedDelete && <Portal>
+                                    <Dialog.Backdrop />
+                                    <Dialog.Positioner>
+                                      <Dialog.Content>
+                                        <Dialog.Header>
+                                          <Dialog.Title>Are you sure?</Dialog.Title>
+                                        </Dialog.Header>
+                                        <Dialog.Body>
+                                          This action cannot be undone. This will permanently delete and remove  data from our systems.
+                                        </Dialog.Body>
+                                        <Dialog.Footer>
+                                          <Dialog.ActionTrigger asChild>
+                                            <Button variant="outline" onClick={() => setSelectedDelete(-1)}>Cancel</Button>
+                                          </Dialog.ActionTrigger>
+                                          <Button colorPalette="red" onClick={() => handleRemoveInvoice(invoice.id)}>Delete</Button>
+                                        </Dialog.Footer>
+                                        <Dialog.CloseTrigger asChild>
+                                          <CloseButton size="sm" />
+                                        </Dialog.CloseTrigger>
+                                      </Dialog.Content>
+                                    </Dialog.Positioner>
+                                  </Portal>}
+                                </Dialog.Root>
                               </Table.Cell>
                             </Table.Row>
                           ))}

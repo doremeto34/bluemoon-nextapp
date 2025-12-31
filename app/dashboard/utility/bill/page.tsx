@@ -120,6 +120,7 @@ export default function MonthlyFeeCreatePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/utility')}
       >
@@ -128,7 +129,7 @@ export default function MonthlyFeeCreatePage() {
           <Text>Back to Utility</Text>
         </HStack>
       </Button>
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create Utility Monthly Bills</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Create Utility Monthly Bills</Heading>
 
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
@@ -480,7 +481,7 @@ export default function MonthlyFeeCreatePage() {
                     </Checkbox.Root>
                   </Table.Cell>
                   <Table.Cell>{h.room_number}</Table.Cell>
-                  <Table.Cell>{h.owner}</Table.Cell>
+                  <Table.Cell>{h.owner? h.owner : "Owner hasn't been added"}</Table.Cell>
                   <Table.Cell>
                     {selectedType === "Electric" ? h.electricity_usage + "kWh"
                       : (selectedType === "Water" ? h.water_usage + "m³"

@@ -89,6 +89,7 @@ export default function MonthlyFeeCreatePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={10}
         mb={4}
         onClick={() => router.push('/dashboard/fees')}
       >
@@ -98,7 +99,7 @@ export default function MonthlyFeeCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create Monthly Bills</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Create Monthly Bills</Heading>
 
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>

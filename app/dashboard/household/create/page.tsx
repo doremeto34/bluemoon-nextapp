@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Select, Portal, createListCollection } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Field, Select, Portal, createListCollection } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -55,6 +55,7 @@ export default function HouseholdCreatePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/household')}
       >
@@ -64,17 +65,18 @@ export default function HouseholdCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Create New Household</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Create New Household</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
           <VStack align="stretch" gap={4}>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Room Number <Text as="span" color="red.500">*</Text>
-                </Text>
+              <Field.Root required>
+                <Field.Label>
+                  Room Number
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Select.Root
                   collection={roomCollection}
                   size="md"
@@ -83,7 +85,7 @@ export default function HouseholdCreatePage() {
                   open={isOpen}
                   onOpenChange={(e) => setIsOpen(e.open)}
                   onValueChange={(details) => {
-                    setFormData({ ...formData, room_id: Number(details.value)});
+                    setFormData({ ...formData, room_id: Number(details.value) });
                   }}
                 >
                   <Select.HiddenSelect />
@@ -109,12 +111,13 @@ export default function HouseholdCreatePage() {
                   </Portal>
                   }
                 </Select.Root>
-              </Box>
-
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Owner ID <Text as="span" color="red.500">*</Text>
-                </Text>
+              </Field.Root>
+              
+              <Field.Root>
+                <Field.Label>
+                  Owner ID
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   placeholder="e.g., 123"
                   value={formData.owner_id}
@@ -125,12 +128,30 @@ export default function HouseholdCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-              </Box>
+              </Field.Root>
 
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Move-in Date <Text as="span" color="red.500">*</Text>
-                </Text>
+              <Field.Root required>
+                <Field.Label>
+                  Move In Date
+                  <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  type="date"
+                  value={formData.move_in_date}
+                  onChange={(e) => setFormData({ ...formData, move_in_date: e.target.value })}
+                  colorPalette={"teal"}
+                  borderColor={"gray.300"}
+                  _focus={{
+                    borderColor: "teal.500",
+                  }}
+                />
+              </Field.Root>
+
+              <Field.Root>
+                <Field.Label>
+                  Move Out Date
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   type="date"
                   value={formData.move_out_date}
@@ -141,24 +162,8 @@ export default function HouseholdCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-              </Box>
+              </Field.Root>
 
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Move-out Date <Text as="span" color="red.500">*</Text>
-                </Text>
-                <Input
-                  type="date"
-                  value={formData.move_in_date}
-                  onChange={(e) => setFormData({ ...formData, move_in_date: e.target.value })}
-                  required
-                  colorPalette={"teal"}
-                  borderColor={"gray.300"}
-                  _focus={{
-                    borderColor: "teal.500",
-                  }}
-                />
-              </Box>
             </SimpleGrid>
           </VStack>
         </Box>

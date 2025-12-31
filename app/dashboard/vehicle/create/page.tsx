@@ -62,6 +62,7 @@ function VehicleCreatePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/vehicle')}
       >
@@ -71,7 +72,7 @@ function VehicleCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Add New Vehicle</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Add New Vehicle</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>

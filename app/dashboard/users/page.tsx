@@ -14,7 +14,7 @@ export default function UserPage() {
   const router = useRouter();
   return (
     <Box>
-      <Heading mb={4} color="teal.700" size="2xl" fontWeight="normal">
+      <Heading mt={10} mb={6} color="#212636" fontSize="3xl" fontWeight="medium">
         Users
       </Heading>
 

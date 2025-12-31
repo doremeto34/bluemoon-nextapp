@@ -342,3 +342,22 @@ export async function updateHouseholdAction(
     return { error: "Cannot update household" };
   }
 }
+//Delete household
+export async function deleteHouseholdAction(
+  id : number,
+) {
+  try {
+    await sql`
+      DELETE FROM households WHERE id = ${id};
+    `;
+    revalidatePath("/dashboard/household");
+    return { success: true };
+  } catch (e: any) {
+    if (e.code === "23503") {
+      return {
+        error: "This household cannot be deleted because it has existing utility records.",
+      };
+    }
+    return { error: "Cannot delete household." };
+  }
+}

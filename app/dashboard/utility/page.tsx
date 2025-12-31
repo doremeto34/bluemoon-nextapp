@@ -37,7 +37,7 @@ export default function BillPage() {
 
   return (
     <Box>
-      <Heading mb={4} color="teal.700" size="2xl" fontWeight="normal">Utility</Heading>
+      <Heading mt={10} mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Utility</Heading>
       {/* Filter Section */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
         <Flex gap={4} direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "end" }}>

@@ -1,10 +1,10 @@
 'use client';
 
-import { Box, Heading, Text, Input, Pagination, ButtonGroup, Flex, HStack, Button, IconButton, Dialog, Portal, CloseButton, Table } from "@chakra-ui/react";
-import { FiSearch, FiChevronLeft, FiChevronRight, FiInfo, FiTrash2, FiPlus, FiEdit, FiArrowLeft } from "react-icons/fi";
+import { Box, Heading, Text, Input, Pagination, ButtonGroup, Flex, HStack, CloseButton, Badge, Button, IconButton, Dialog, Portal, Table } from "@chakra-ui/react";
+import { FiSearch, FiChevronLeft, FiChevronRight, FiEdit, FiTrash2, FiPlus, FiArrowLeft } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getFullHouseholdsAction, deleteHouseholdAction } from "@/lib/household";
+import { getAbsenceRecordsAction, deleteAbsenceRecordAction } from "@/lib/demography";
 import { Toaster, toaster } from "@/components/ui/toaster"
 
 const ITEMS_PER_PAGE = 10;
@@ -12,50 +12,57 @@ const ITEMS_PER_PAGE = 10;
 export default function DemographyPage() {
   const router = useRouter();
 
-  const [households, setHouseholds] = useState<any[]>([]);
+  const [records, setRecords] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
-  const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [selectedDelete, setSelectedDelete] = useState<number>();
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getFullHouseholdsAction();
-      setHouseholds(data);
+      const result = await getAbsenceRecordsAction();
+      if (result.success && result.data) {
+        setRecords(result.data);
+      } else {
+        setRecords([]); // safe fallback
+      }
     };
 
     fetchData();
   }, []);
 
-  const filteredHousehold = households.filter((h) => {
+  const filteredRecords = records.filter((record) => {
     const matchesSearch =
-      (h.owner != null && h.owner.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      h.room.includes(searchTerm) ||
-      h.movein_date.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (h.moveout_date != null && h.moveout_date.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
-      h.id.toString().includes(searchTerm);
+      record.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.household_id?.toString().includes(searchTerm) ||
+      record.cccd.includes(searchTerm) ||
+      record.ngay_sinh.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.id.toString().includes(searchTerm);
     return matchesSearch;
   });
 
-  const totalPages = Math.ceil(filteredHousehold.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredRecords.length / ITEMS_PER_PAGE);
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentHouseholds = filteredHousehold.slice(startIndex, endIndex);
+  const currentRecords = filteredRecords.slice(startIndex, endIndex);
 
-  const handleRemoveHousehold = async (householdId: number) => {
-    const result = await deleteHouseholdAction(householdId);   
+  const handleEditPerson = (personId: number) => {
+    router.push(`/dashboard/demography/${personId}/edit`);
+  };
+
+  const handleRemoveAbsenceRecord = async (recordId: number) => {
+    const result = await deleteAbsenceRecordAction(recordId);
     if (result?.error) {
       toaster.create({
-        title: "Cannot delete household",
+        title: "Cannot delete record",
         description: result.error,
         type: "error",
       });
       setSelectedDelete(-1);
       return;
     }
-    setHouseholds(prev => prev.filter(h => h.id !== householdId));
+    setRecords(prev => prev.filter(p => p.id !== recordId));
     toaster.create({
-      description: "Household deleted",
+      description: "Record deleted",
       type: "success",
     });
     setSelectedDelete(-1);
@@ -64,11 +71,21 @@ export default function DemographyPage() {
   return (
     <Box>
       <Toaster />
-      <Flex justify="space-between" align="center" mt={10} mb={6}>
-        <Box>
-          <Heading color="#212636" fontSize="3xl" fontWeight="medium">Household</Heading>
-        </Box>
-        <HStack>
+      <Button
+          variant="ghost"
+          colorPalette="teal"
+          mt={10}
+          mb={4}
+          onClick={() => router.push('/dashboard/demography')}
+        >
+          <HStack gap={2}>
+            <FiArrowLeft />
+            <Text>Back to Demography</Text>
+          </HStack>
+        </Button>
+      <Flex justify="space-between" align="center" mb={6}>
+        <Heading color="#212636" fontSize="3xl" fontWeight="medium">Tam tru tam vang</Heading>
+        <Flex gap={4}>
           <Button
             colorPalette="teal"
             bgGradient="to-r"
@@ -79,14 +96,14 @@ export default function DemographyPage() {
               transform: 'translateY(-2px)',
               boxShadow: 'lg',
             }}
-            onClick={() => router.push('/dashboard/household/create')}
+            onClick={() => router.push('/dashboard/demography/absence/create')}
           >
             <HStack gap={2}>
               <FiPlus />
-              <Text>Add Household</Text>
+              <Text>Add Record</Text>
             </HStack>
           </Button>
-        </HStack>
+        </Flex>
       </Flex>
 
       {/* Search and Filter */}
@@ -104,7 +121,7 @@ export default function DemographyPage() {
               <FiSearch />
             </Box>
             <Input
-              placeholder="Search by ID, owner, date of movein, room..."
+              placeholder="Search by ID, name, date of birth, room, or CCCD..."
               pl="10"
               value={searchTerm}
               onChange={(e) => {
@@ -123,29 +140,39 @@ export default function DemographyPage() {
 
       {/* Results Summary */}
       <Text color="gray.600" mb={4}>
-        Showing {startIndex + 1}-{Math.min(endIndex, filteredHousehold.length)} of {filteredHousehold.length} residents
+        Showing {startIndex + 1}-{Math.min(endIndex, currentRecords.length)} of {currentRecords.length} residents
       </Text>
 
       <Table.Root size="sm" variant="outline" borderRadius="lg" overflow="hidden">
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeader w="8%">ID</Table.ColumnHeader>
-            <Table.ColumnHeader w="10%">Room</Table.ColumnHeader>
-            <Table.ColumnHeader w="30%">Owner</Table.ColumnHeader>
-            <Table.ColumnHeader w="17%">Move in Date</Table.ColumnHeader>
-            <Table.ColumnHeader w="17%">Move out Date</Table.ColumnHeader>
-            <Table.ColumnHeader w="18%">Action</Table.ColumnHeader>
+            <Table.ColumnHeader w="8%">Person ID</Table.ColumnHeader>
+            <Table.ColumnHeader w="25%">Name</Table.ColumnHeader>
+            <Table.ColumnHeader w="17%">CCCD</Table.ColumnHeader>
+            <Table.ColumnHeader w="12%">Start Date</Table.ColumnHeader>
+            <Table.ColumnHeader w="15%">End Date</Table.ColumnHeader>
+            <Table.ColumnHeader w="13%">Status</Table.ColumnHeader>
+            <Table.ColumnHeader w="10%">Action</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {currentHouseholds.map((h) => (
-            <Table.Row key={h.id}>
-              <Table.Cell>{h.id}</Table.Cell>
-              <Table.Cell>{h.room}</Table.Cell>
-              <Table.Cell>{h.owner == null ? <Text color="teal">Owner hasn't been added yet</Text> : h.owner}</Table.Cell>
+          {currentRecords.map((record) => (
+            <Table.Row key={record.id}>
+              <Table.Cell>{record.person_id}</Table.Cell>
+              <Table.Cell>{record.full_name}</Table.Cell>
+              <Table.Cell>{record.cccd}</Table.Cell>
               <Table.Cell>
                 <Text>
-                  {new Date(h.movein_date).toLocaleDateString('en-US', {
+                  {new Date(record.start_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </Text>
+              </Table.Cell>
+               <Table.Cell>
+                <Text>
+                  {new Date(record.end_date).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric'
@@ -153,15 +180,15 @@ export default function DemographyPage() {
                 </Text>
               </Table.Cell>
               <Table.Cell>
-                {h.moveout_date == null ? "Residing" :
-                  <Text>
-                    {new Date(h.moveout_date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </Text>
-                }
+                <Badge
+                  colorPalette={record.status === "residing"
+                    ? "green"
+                    : record.status === "temporary"
+                      ? "yellow"
+                      : "red"}
+                >
+                  {record.status}
+                </Badge>
               </Table.Cell>
               <Table.Cell>
                 <HStack gap={2}>
@@ -170,40 +197,40 @@ export default function DemographyPage() {
                     size="sm"
                     variant="outline"
                     colorPalette="black"
-                    onClick={() => router.push(`/dashboard/household/${h.id}`)}
+                    onClick={() => handleEditPerson(record.id)}
                   >
-                    <FiInfo />
+                    <FiEdit />
                   </IconButton>
-                  <Dialog.Root 
-                    role="alertdialog" 
-                    open={h.id===selectedDelete} 
-                    onOpenChange={(e) => {setSelectedDelete(e.open? h.id : -1);}}
+                  <Dialog.Root
+                    role="alertdialog"
+                    open={record.id === selectedDelete}
+                    onOpenChange={(e) => { setSelectedDelete(e.open ? record.id : -1); }}
                   >
                     <Dialog.Trigger asChild>
                       <IconButton
                         rounded="full"
                         size="sm"
                         variant="outline"
-                        colorPalette="red"                     
+                        colorPalette="red"
                       >
                         <FiTrash2 />
                       </IconButton>
                     </Dialog.Trigger>
-                    {h.id==selectedDelete && <Portal>
-                      <Dialog.Backdrop/>
+                    {record.id == selectedDelete && <Portal>
+                      <Dialog.Backdrop />
                       <Dialog.Positioner>
                         <Dialog.Content>
                           <Dialog.Header>
                             <Dialog.Title>Are you sure?</Dialog.Title>
                           </Dialog.Header>
                           <Dialog.Body>
-                            This action cannot be undone. This will permanently delete and remove data of household {h.id} from our systems.
+                            This action cannot be undone. This will permanently delete and remove  data from our systems.
                           </Dialog.Body>
                           <Dialog.Footer>
                             <Dialog.ActionTrigger asChild>
-                              <Button variant="outline" onClick={()=>setSelectedDelete(-1)}>Cancel</Button>
+                              <Button variant="outline" onClick={() => setSelectedDelete(-1)}>Cancel</Button>
                             </Dialog.ActionTrigger>
-                            <Button colorPalette="red" onClick={() => handleRemoveHousehold(h.id)}>Delete</Button>
+                            <Button colorPalette="red" onClick={() => handleRemoveAbsenceRecord(record.id)}>Delete</Button>
                           </Dialog.Footer>
                           <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
@@ -212,20 +239,23 @@ export default function DemographyPage() {
                       </Dialog.Positioner>
                     </Portal>}
                   </Dialog.Root>
+
                 </HStack>
               </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
-      {currentHouseholds.length === 0 && (
+
+      {currentRecords.length === 0 && (
         <Box bg="white" p={8} borderRadius="lg" boxShadow="md" textAlign="center">
-          <Text color="gray.500">No households found matching your search.</Text>
+          <Text color="gray.500">No residents found matching your search.</Text>
         </Box>
       )}
+
       {/* Pagination */}
       <Pagination.Root
-        count={households.length}
+        count={records.length}
         pageSize={ITEMS_PER_PAGE}
         page={page}
         onPageChange={(e) => setPage(e.page)}

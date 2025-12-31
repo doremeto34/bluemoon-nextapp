@@ -5,6 +5,7 @@ import { countHouseholdsAction, countPeopleAction, calculateMonthlyRevenueAction
 import MonthlyReveiceChart from "@/components/MonthlyReveiceChart"
 import VehicleReceiveChart from "@/components/VehicleReceiveChart"
 import UtilityReceiveChart from "@/components/UtilityReceiveChart"
+import ReceivePieChart from "@/components/ReceivePieChart"
 
 export default async function Dashboard() {
   const cookieStore = await cookies();
@@ -16,13 +17,13 @@ export default async function Dashboard() {
   const monthlyRevenue = await calculateMonthlyRevenueAction(currentDate.getMonth() + 1, currentDate.getFullYear());
   return (
     <Box>
-      <Heading color="teal.700" fontSize="2xl" fontWeight="normal" mb={6}>Overview</Heading>
+      <Heading color="#212636" fontSize="3xl" fontWeight="medium" mt={10} mb={8}>Overview</Heading>
 
       {/* Statistics Cards */}
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} mb={6}>
         <Stat.Root borderWidth="1px" p="4" rounded="lg" boxShadow="md">
           <HStack justify="space-between" mt={4}>
-            <Stat.Label>Total Residents</Stat.Label>
+            <Stat.Label>Total Households</Stat.Label>
             <Icon color="fg.muted">
               <MdApartment />
             </Icon>
@@ -32,7 +33,7 @@ export default async function Dashboard() {
         </Stat.Root>
         <Stat.Root borderWidth="1px" p="4" rounded="lg" boxShadow="md">
           <HStack justify="space-between" mt={4}>
-            <Stat.Label>Total Households</Stat.Label>
+            <Stat.Label>Total Residents</Stat.Label>
             <Icon color="fg.muted">
               <MdPeople />
             </Icon>
@@ -61,7 +62,10 @@ export default async function Dashboard() {
           </Card.Root>
         </GridItem>
         <Card.Root rounded="lg" boxShadow="md">
-          <Card.Header alignItems="flex-start"></Card.Header>
+          <Card.Header alignItems="flex-start">
+              <Card.Title>Receive Proportions</Card.Title>
+            </Card.Header>
+          <Card.Body><ReceivePieChart/></Card.Body>
         </Card.Root>
       </SimpleGrid>
 

@@ -1,10 +1,9 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, HStack, Button, Select, Portal, createListCollection } from "@chakra-ui/react";
+import { Box, Heading, SegmentGroup, VStack, Flex, HStack, Button, Select, Portal, createListCollection } from "@chakra-ui/react";
 import { FiCheckCircle, FiCircle, FiDollarSign } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { getMonthlyFeeRecordsAction, updateMonthlyFeeRecordStatusAction } from "@/lib/fee";
-import { MonthlyFeeRecord } from "@/types/monthly_fee_record";
 import MonthlyInvoiceList from "@/components/MonthlyInvoicesList";
 import VehicleBillList from "@/components/VehicleInvoiceList";
 import UtilityInvoicesList from "@/components/UtilityInvoicesList";
@@ -46,7 +45,7 @@ export default function InvoicePage() {
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [selectedType, setSelectedType] = useState("Monthly");
-
+  const [selectedStatus, setSelectedStatus] = useState("All");
   useEffect(() => {
       const fetchData = async () => {
         const data = await getMonthlyFeeRecordsAction(selectedMonth, selectedYear);
@@ -69,7 +68,7 @@ export default function InvoicePage() {
 
   return (
     <Box>
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Monthly Invoices</Heading>
+      <Heading mt={10} mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Monthly Invoices</Heading>
 
       {/* Filter Section */}
       <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
@@ -173,13 +172,17 @@ export default function InvoicePage() {
               </Select.Positioner>
             </Portal>
           </Select.Root>
-
+          <SegmentGroup.Root value={selectedStatus} onValueChange={(e) => setSelectedStatus(e.value ? e.value : "")}>
+            <SegmentGroup.Indicator />
+            <SegmentGroup.Items items={["All", "Paid", "Pending"]} />
+          </SegmentGroup.Root>
         </Flex>
       </Box>
       {selectedType === "Monthly" && (
         <MonthlyInvoiceList
           month={selectedMonth}
           year={selectedYear}
+          status={selectedStatus}
         />
       )}
       {selectedType === "Vehicle" && (

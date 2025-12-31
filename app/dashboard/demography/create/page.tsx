@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Select, Portal, createListCollection } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, HStack, Input, SimpleGrid, Select, Portal, Field, createListCollection } from "@chakra-ui/react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -59,6 +59,7 @@ export default function DemographyCreatePage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/demography')}
       >
@@ -68,17 +69,18 @@ export default function DemographyCreatePage() {
         </HStack>
       </Button>
 
-      <Heading mb={4} color="teal.700" fontSize="2xl" fontWeight="normal">Add New Person</Heading>
+      <Heading mb={6} color="#212636" fontSize="3xl" fontWeight="medium">Add New Person</Heading>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>
         <Box bg="white" p={6} borderRadius="lg" boxShadow="md" mb={6}>
           <VStack align="stretch" gap={4}>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Full Name <Text as="span" color="red.500">*</Text>
-                </Text>
+              <Field.Root required>
+                <Field.Label>
+                  Full Name
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   placeholder="e.g., John Smith"
                   value={formData.full_name}
@@ -90,12 +92,12 @@ export default function DemographyCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-              </Box>
-
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  Date of Birth <Text as="span" color="red.500">*</Text>
-                </Text>
+              </Field.Root>
+              <Field.Root required>
+                <Field.Label>
+                  Date of Birth
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   type="date"
                   value={formData.ngay_sinh}
@@ -107,12 +109,13 @@ export default function DemographyCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-              </Box>
+              </Field.Root>
 
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
-                  CCCD (Căn cước công dân) <Text as="span" color="red.500">*</Text>
-                </Text>
+              <Field.Root required>
+                <Field.Label>
+                  CCCD (Căn cước công dân)
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Input
                   placeholder="e.g., 001082012345"
                   value={formData.cccd}
@@ -125,15 +128,14 @@ export default function DemographyCreatePage() {
                     borderColor: "teal.500",
                   }}
                 />
-                <Text fontSize="xs" color="gray.500" mt={1}>
-                  12-digit identification number
-                </Text>
-              </Box>
-
-              <Box>
-                <Text mb={2} color="gray.600" fontSize="sm" fontWeight="medium">
+                <Field.HelperText>12-digit identification number</Field.HelperText>
+              </Field.Root>
+             
+              <Field.Root required>
+                <Field.Label>
                   Room
-                </Text>
+                  <Field.RequiredIndicator />
+                </Field.Label>
                 <Select.Root
                   collection={roomCollection}
                   size="md"
@@ -169,10 +171,9 @@ export default function DemographyCreatePage() {
                   </Portal>
                   }
                 </Select.Root>
-                <Text fontSize="xs" color="gray.500" mt={1}>
-                  Leave empty if not assigned to a household
-                </Text>
-              </Box>
+                <Field.HelperText>Leave empty if not assigned to a household</Field.HelperText>
+              </Field.Root>
+              
             </SimpleGrid>
           </VStack>
         </Box>

@@ -112,6 +112,7 @@ export default function OnetimeFeeDetailPage() {
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/fees')}
       >
@@ -121,8 +122,8 @@ export default function OnetimeFeeDetailPage() {
         </HStack>
       </Button>
 
-      <Flex justify="space-between" align="center" mb={4}>
-        <Heading color="teal.700" fontSize="2xl" fontWeight="normal">One-Time Fee Details</Heading>
+      <Flex justify="space-between" align="center" mb={6}>
+        <Heading color="#212636" fontSize="3xl" fontWeight="medium">One-Time Fee Details</Heading>
         {!isEditing ? (
           <Button
             colorPalette="teal"

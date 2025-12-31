@@ -50,8 +50,8 @@ export default function Sidebar({ isCollapsed, onToggle }:{
       w={isCollapsed ? "80px" : "250px"}
       transition="width 0.25s ease"
       bgGradient="to-b"
-      gradientFrom="#182233"
-      gradientTo="cyan.900"
+      gradientFrom="#121621"
+      gradientTo="cyan.950"
       color="white"
       p={5}
       boxShadow="xl"
@@ -174,9 +174,9 @@ export default function Sidebar({ isCollapsed, onToggle }:{
                     cursor="pointer"
                   >
                     <Box fontSize="lg">
-                      <ItemIcon />
+                      <ItemIcon color={active ? "white" : "#8A94A6"}/>
                     </Box>
-                    <Text fontWeight={active ? "semibold" : "normal"} fontSize="sm">
+                    <Text fontWeight="semibold" color={active ? "white" : "#8A94A6"} fontSize="sm">
                       {item.label}
                     </Text>
                   </HStack>
@@ -220,7 +220,7 @@ export default function Sidebar({ isCollapsed, onToggle }:{
                     cursor="pointer"
                   >
                     <Box fontSize="lg">
-                      <ItemIcon />
+                      <ItemIcon color={active ? "white" : "#8A94A6"}/>
                     </Box>
                   </HStack>
                 </Link>

@@ -176,8 +176,13 @@ export default function MonthlyBillList({
               <Flex>
                 <Accordion.ItemTrigger flex="93%">
                   <Accordion.ItemIndicator />
-                  <Span w="35%">{household.room}</Span>
-                  <Span w="65%">{household.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : household.owner}</Span>
+                  <Span w="15%">{household.room}</Span>
+                  <Span w="42%">{household.owner == null? <Text color="teal">Owner hasn't been added yet</Text> : household.owner}</Span>
+                  <Span w="48%">
+                    {monthlyRecords
+                      .filter(record => record.household_id === household.id)
+                      .reduce((sum, invoice) => sum + invoice.amount, 0)}
+                  </Span>
                 </Accordion.ItemTrigger>
                 <IconButton
                   size="sm"

@@ -7,17 +7,25 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getRoomsAction } from "@/lib/household";
 import type { Household } from "@/types/households";
-
+import {
+  Skeleton,
+  SkeletonCircle,
+  SkeletonText,
+  Stack,
+  For,
+} from "@chakra-ui/react"
 
 export default function RoomPage() {
   const router = useRouter();
   const [rooms, setRooms] = useState<Household[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       const data = await getRoomsAction();
       setRooms(data);
+      setIsLoading(false);
     }
     load();
   }, []);
@@ -30,9 +38,9 @@ export default function RoomPage() {
 
   return (
     <Box>
-      <Flex justify="space-between" align="center" mb={4}>
+      <Flex justify="space-between" align="center" mt={10} mb={8}>
         <Box>
-          <Heading color="teal.700" fontSize="2xl" fontWeight="normal">Room</Heading>
+          <Heading color="#212636" fontSize="3xl" fontWeight="medium">Room</Heading>
         </Box>
         <HStack>
           <Button
@@ -81,13 +89,27 @@ export default function RoomPage() {
           />
         </Box>
       </Box>
-      {filteredRooms.length === 0 && (
+      {!isLoading && filteredRooms.length === 0 && (
         <Box bg="white" p={8} borderRadius="lg" boxShadow="md" textAlign="center" mb={6}>
           <Text color="gray.500">No households found matching your search.</Text>
         </Box>
       )}
       {/* Household Grid */}
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} gap={4}>
+        {isLoading ? 
+          <For each={[1,2,3,4]}>
+            {(item, index) => 
+            <Stack key={index}>
+              <HStack width="full">
+                <SkeletonCircle size="10" />
+                <SkeletonText noOfLines={2} />
+              </HStack>
+              <Skeleton height="100px"/>
+            </Stack>}
+          </For>
+          :
+          <></>
+        }
         {filteredRooms.map((room) => (
           <Box
             key={room.id}
@@ -148,6 +170,7 @@ export default function RoomPage() {
             </Box>
           </Box>
         ))}
+
         <Box
             bg="white"
             p={5}
@@ -156,6 +179,7 @@ export default function RoomPage() {
             cursor="pointer"
             alignContent="center"
             transition="all 0.2s"
+            minH="150px"
             _hover={{
               transform: 'translateY(-4px)',
               boxShadow: 'lg',

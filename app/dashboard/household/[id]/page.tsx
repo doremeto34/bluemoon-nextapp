@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text, VStack, Flex, Button, SimpleGrid, HStack, Input, Dialog, Stat, Portal, CloseButton } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, Flex, Button, SimpleGrid, IconButton, HStack, Input, Dialog, Stat, Portal, CloseButton } from "@chakra-ui/react";
 import { FiArrowLeft, FiUser, FiEdit, FiUserPlus, FiTrash2 } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
 import { useRouter } from "next/navigation";
@@ -8,7 +8,8 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getHouseholdByIdAction, updateHouseholdAction } from "@/lib/household";
 import { getVehiclesByHouseholdIdAction } from "@/lib/vehicle";
-import { getPersonByIdAction } from "@/lib/demography";
+import { getPersonByIdAction, deletePersonAction } from "@/lib/demography";
+import { Toaster, toaster } from "@/components/ui/toaster"
 import { IoCarSportOutline } from "react-icons/io5";
 import { PiMotorcycle } from "react-icons/pi";
 import { SiHonda } from "react-icons/si";
@@ -26,6 +27,7 @@ export default function HouseholdDetailPage() {
   const [formData, setFormData] = useState<any>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenVehicle, setIsOpenVehicle] = useState(false);
+  const [selectedDeleteResident, setSelectedDeleteResident] = useState<number>();
 
   useEffect(() => {
     async function fetch() {
@@ -72,10 +74,28 @@ export default function HouseholdDetailPage() {
     setHousehold(updated);
   }
 
-  const handleRemoveMember = (memberId: number) => {
-    if (confirm('Are you sure you want to remove this member?')) {
-      alert(`Remove member ID: ${memberId}`);
+  const handleRemovePerson = async (personId: number) => {
+    const result = await deletePersonAction(personId);
+    if (result?.error) {
+      toaster.create({
+        title: "Cannot delete resident",
+        description: result.error,
+        type: "error",
+      });
+      setSelectedDeleteResident(-1);
+      return;
     }
+    setHousehold((prev: any) => {
+      return {
+        ...prev,
+        members: prev.members.filter((m: any) => m.id !== personId)
+      };
+    });
+    toaster.create({
+      description: "Resident deleted",
+      type: "success",
+    });
+    setSelectedDeleteResident(-1);
   };
 
   const handleRemoveVehicle = (vehicleId: number) => {
@@ -90,10 +110,12 @@ export default function HouseholdDetailPage() {
 
   return (
     <Box>
+      <Toaster/>
       {/* Back Button */}
       <Button
         variant="ghost"
         colorPalette="teal"
+        mt={6}
         mb={4}
         onClick={() => router.push('/dashboard/household')}
       >
@@ -311,17 +333,45 @@ export default function HouseholdDetailPage() {
                 </Flex>
 
                 <HStack gap={2} ml={4}>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    colorPalette="red"
-                    onClick={() => handleRemoveMember(member.id)}
+                  <Dialog.Root
+                    role="alertdialog"
+                    open={member.id === selectedDeleteResident}
+                    onOpenChange={(e) => { setSelectedDeleteResident(e.open ? member.id : -1); }}
                   >
-                    <HStack gap={1}>
-                      <FiTrash2 />
-                      <Text>Remove</Text>
-                    </HStack>
-                  </Button>
+                    <Dialog.Trigger asChild>
+                      <IconButton
+                        rounded="full"
+                        size="sm"
+                        variant="outline"
+                        colorPalette="red"
+                      >
+                        <FiTrash2 />
+                      </IconButton>
+                    </Dialog.Trigger>
+                    {member.id == selectedDeleteResident && <Portal>
+                      <Dialog.Backdrop />
+                      <Dialog.Positioner>
+                        <Dialog.Content>
+                          <Dialog.Header>
+                            <Dialog.Title>Are you sure?</Dialog.Title>
+                          </Dialog.Header>
+                          <Dialog.Body>
+                            This action cannot be undone. This will permanently delete and remove  data from our systems.
+                          </Dialog.Body>
+                          <Dialog.Footer>
+                            <Dialog.ActionTrigger asChild>
+                              <Button variant="outline" onClick={() => setSelectedDeleteResident(-1)}>Cancel</Button>
+                            </Dialog.ActionTrigger>
+                            <Button colorPalette="red" onClick={() => handleRemovePerson(member.id)}>Delete</Button>
+                          </Dialog.Footer>
+                          <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                          </Dialog.CloseTrigger>
+                        </Dialog.Content>
+                      </Dialog.Positioner>
+                    </Portal>}
+                  </Dialog.Root>
+                  
                 </HStack>
               </Flex>
             </Box>

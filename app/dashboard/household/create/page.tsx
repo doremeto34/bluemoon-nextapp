@@ -37,10 +37,6 @@ export default function HouseholdCreatePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    alert(formData.room_id);
-    alert(formData.move_in_date);
-    alert(formData.owner_id==""? null : Number(formData.owner_id));
-    return;
     await createHouseholdAction(
       formData.room_id,
       Number(formData.owner_id),
